@@ -40,7 +40,7 @@ public class ProjectWikiProcessor {
             try {
                 details.put(page, redmine.getWikiManager().getWikiPageDetailByProjectAndTitle(status.getProjectName(), page.getTitle()));
             } catch (NotFoundException e) {
-                // TODO LOGGER.error("Could not fetch the details of page `{}`.", page.getTitle(), e);
+                LOGGER.error("Could not fetch the details of page `{}`.", page.getTitle(), e);
             }
         }
 

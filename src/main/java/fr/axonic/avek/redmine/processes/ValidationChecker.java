@@ -66,16 +66,6 @@ public class ValidationChecker {
         return ok;
     }
 
-    private boolean verifiersConfirmed(ValidationDocument document) {
-        for (ValidationSignature signature : document.getSignatures()) {
-            if (!signature.isConfirmed()) {
-                notifier.notSigned(signature.getSignatory(), document.getWikiPage());
-            }
-        }
-
-        return document.getSignatures().stream().allMatch(ValidationSignature::isConfirmed);
-    }
-
     private boolean verifiersHavePutAGoodDate(ValidationDocument document) {
         LocalDate latestAuthorSignatureDate = document.getSignatures().stream()
                 .filter(s -> s.getSignatoryRole() == UserRole.AUTHOR)

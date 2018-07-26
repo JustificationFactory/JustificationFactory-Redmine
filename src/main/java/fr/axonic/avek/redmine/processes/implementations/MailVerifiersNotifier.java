@@ -1,6 +1,5 @@
 package fr.axonic.avek.redmine.processes.implementations;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import fr.axonic.avek.redmine.io.communication.MailSender;
 import fr.axonic.avek.redmine.models.UserIdentity;
 import fr.axonic.avek.redmine.processes.notifications.VerifiersNotification;
@@ -12,6 +11,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
 import javax.mail.MessagingException;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -59,10 +59,10 @@ public class MailVerifiersNotifier extends VerifiersNotifier {
 
         Template template = configuration.getTemplate("verifiers-email.ftl");
 
-        try (ByteOutputStream bytes = new ByteOutputStream()) {
+        try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
             template.process(tree, new OutputStreamWriter(bytes));
 
-            String content = new String(bytes.getBytes(), Charset.defaultCharset());
+            String content = new String(bytes.toByteArray(), Charset.defaultCharset());
 
             sender.sendEmail(identity, "Redmine Wiki issues", content);
         } catch (TemplateException e) {
