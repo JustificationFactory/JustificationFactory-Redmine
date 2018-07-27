@@ -49,7 +49,7 @@ public class SimpleValidationExtractor implements ValidationExtractor {
             LOGGER.info("The page `{}` does not follow the structure.", page.getTitle());
             LOGGER.error("Exception while extracting the validation document of `{}`.", page.getTitle(), e);
 
-            return Optional.empty();
+            return Optional.of(ValidationDocument.INVALID_DOCUMENT);
         }
     }
 

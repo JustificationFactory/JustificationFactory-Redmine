@@ -7,6 +7,8 @@ import java.util.List;
 
 public class ValidationDocument {
 
+    public static final ValidationDocument INVALID_DOCUMENT = new ValidationDocument(null);
+
     private final WikiPage wikiPage;
     private final List<ValidationSignature> signatures;
 

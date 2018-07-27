@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.RedmineManagerFactory;
+import fr.axonic.avek.redmine.io.communication.IdentityBinder;
 import fr.axonic.avek.redmine.io.communication.MailSender;
 import fr.axonic.avek.redmine.io.communication.SimpleIdentityBinder;
 import fr.axonic.avek.redmine.io.models.CredentialsDocument;
@@ -12,6 +13,8 @@ import fr.axonic.avek.redmine.io.models.ProjectsDocument;
 import fr.axonic.avek.redmine.processes.ProjectWikiProcessor;
 import fr.axonic.avek.redmine.processes.implementations.MailVerifiersNotifier;
 import fr.axonic.avek.redmine.processes.implementations.SimpleValidationExtractor;
+import fr.axonic.avek.redmine.processes.ranking.RankingWikiGenerator;
+import fr.axonic.avek.redmine.processes.ranking.UsersRanking;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -27,6 +30,8 @@ public class Runner {
     private static final String DEFAULT_PROJECTS = System.getProperty("user.home") + "/.avek/avek_redmine/projects.json";
     private static final Scanner STANDARD_INPUT = new Scanner(System.in);
 
+    public static RankingWikiGenerator.RankingWikiData RANKING_DATA;
+
     public static void main(String[] args) throws ParseException, IOException, RedmineException {
         CommandLine arguments = parseArguments(args);
 
@@ -34,15 +39,18 @@ public class Runner {
         ProjectsDocument projectsDocument = parseProjects(new File(arguments.getOptionValue(PROJECTS_OPTION, DEFAULT_PROJECTS)));
 
         RedmineManager redmineManager = RedmineManagerFactory.createWithApiKey(credentialsDocument.getRedmineUrl(), credentialsDocument.getRedmineApiKey());
-        MailSender sender = new MailSender(credentialsDocument, new SimpleIdentityBinder());
+        IdentityBinder identityBinder = new SimpleIdentityBinder();
+        MailSender sender = new MailSender(credentialsDocument, identityBinder);
 
-        MailVerifiersNotifier notifier = new MailVerifiersNotifier(credentialsDocument.getRedmineUrl(), sender);
+        MailVerifiersNotifier notifier = new MailVerifiersNotifier(identityBinder, credentialsDocument.getRedmineUrl(), sender);
 
         ProjectWikiProcessor processor = new ProjectWikiProcessor(redmineManager, new SimpleValidationExtractor(), notifier);
 
         for (ProjectsDocument.ProjectStatus status : projectsDocument.getProjects()) {
             notifier.setCurrentProject(status.getProjectName());
             processor.processWiki(status);
+
+            System.out.println(new RankingWikiGenerator().generateMarkdown(RANKING_DATA));
         }
     }
 

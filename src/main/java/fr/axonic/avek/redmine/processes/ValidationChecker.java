@@ -63,6 +63,10 @@ public class ValidationChecker {
             ok = false;
         }
 
+        if (ok) {
+            notifier.ok(signature.getSignatory(), document.getWikiPage());
+        }
+
         return ok;
     }
 
