@@ -37,14 +37,14 @@ public class ProjectWikiProcessor {
     }
 
     public void processWiki(ProjectsDocument.ProjectStatus status) throws RedmineException {
-        Runner.RANKING_DATA = new RankingWikiGenerator.RankingWikiData();
-        Runner.RANKING_DATA.setDate(LocalDate.now());
-        Runner.RANKING_DATA.setProjectName(status.getProjectName());
+        Runner.rankingData = new RankingWikiGenerator.RankingWikiData();
+        Runner.rankingData.setDate(LocalDate.now());
+        Runner.rankingData.setProjectName(status.getProjectName());
 
         List<WikiPage> pages = getUpdatedWikiPages(status);
 
         LOGGER.info("Fetched {} wiki pages.", pages.size());
-        Runner.RANKING_DATA.setTotalPages(pages.size());
+        Runner.rankingData.setTotalPages(pages.size());
 
         Map<WikiPage, WikiPageDetail> details = new HashMap<>();
         for (WikiPage page : pages) {
@@ -56,13 +56,13 @@ public class ProjectWikiProcessor {
         }
 
         LOGGER.info("Fetched details of {} pages.", details.size());
-        Runner.RANKING_DATA.setNotFoundPages(pages.size() - details.size());
+        Runner.rankingData.setNotFoundPages(pages.size() - details.size());
 
         List<ValidationDocument> validations = generateValidationDocuments(details);
 
         LOGGER.info("Generated {} validation documents.", validations.size());
-        Runner.RANKING_DATA.setWithoutApprovalPages(details.size() - validations.size());
-        Runner.RANKING_DATA.setNokStructurePages((int) validations.stream().filter(v -> v == ValidationDocument.INVALID_DOCUMENT).count());
+        Runner.rankingData.setWithoutApprovalPages(details.size() - validations.size());
+        Runner.rankingData.setNokStructurePages((int) validations.stream().filter(v -> v == ValidationDocument.INVALID_DOCUMENT).count());
 
         List<ValidationDocument> wellStructuredDocument = validations.stream()
                 .filter(v -> v != ValidationDocument.INVALID_DOCUMENT)
@@ -71,8 +71,8 @@ public class ProjectWikiProcessor {
         List<ValidationDocument> readyValidationsDocuments = filterValidationsAndNotify(wellStructuredDocument);
 
         LOGGER.info("Ready to send {} documents and their validations.", readyValidationsDocuments.size());
-        Runner.RANKING_DATA.setNokContentPages(wellStructuredDocument.size() - readyValidationsDocuments.size());
-        Runner.RANKING_DATA.setOkContentPages(readyValidationsDocuments.size());
+        Runner.rankingData.setNokContentPages(wellStructuredDocument.size() - readyValidationsDocuments.size());
+        Runner.rankingData.setOkContentPages(readyValidationsDocuments.size());
     }
 
     private List<WikiPage> getUpdatedWikiPages(ProjectsDocument.ProjectStatus status) throws RedmineException {

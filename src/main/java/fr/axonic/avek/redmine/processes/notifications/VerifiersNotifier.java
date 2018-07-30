@@ -59,7 +59,7 @@ public abstract class VerifiersNotifier {
     }
 
     public void processNotifications() {
-        Runner.RANKING_DATA.setRanking(new UsersRanking.Builder(identityBinder).withNotifications(registeredNotifications).build());
+        Runner.rankingData.setRanking(new UsersRanking.Builder(identityBinder).withNotifications(registeredNotifications).build());
 
         registeredNotifications.forEach((user, notifications) -> {
             try {

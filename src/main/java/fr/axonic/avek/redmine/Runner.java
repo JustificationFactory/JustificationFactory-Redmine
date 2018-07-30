@@ -14,7 +14,6 @@ import fr.axonic.avek.redmine.processes.ProjectWikiProcessor;
 import fr.axonic.avek.redmine.processes.implementations.MailVerifiersNotifier;
 import fr.axonic.avek.redmine.processes.implementations.SimpleValidationExtractor;
 import fr.axonic.avek.redmine.processes.ranking.RankingWikiGenerator;
-import fr.axonic.avek.redmine.processes.ranking.UsersRanking;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -30,7 +29,7 @@ public class Runner {
     private static final String DEFAULT_PROJECTS = System.getProperty("user.home") + "/.avek/avek_redmine/projects.json";
     private static final Scanner STANDARD_INPUT = new Scanner(System.in);
 
-    public static RankingWikiGenerator.RankingWikiData RANKING_DATA;
+    public static RankingWikiGenerator.RankingWikiData rankingData;
 
     public static void main(String[] args) throws ParseException, IOException, RedmineException {
         CommandLine arguments = parseArguments(args);
@@ -50,7 +49,7 @@ public class Runner {
             notifier.setCurrentProject(status.getProjectName());
             processor.processWiki(status);
 
-            System.out.println(new RankingWikiGenerator().generateMarkdown(RANKING_DATA));
+            System.out.println(new RankingWikiGenerator().generateMarkdown(rankingData));
         }
     }
 

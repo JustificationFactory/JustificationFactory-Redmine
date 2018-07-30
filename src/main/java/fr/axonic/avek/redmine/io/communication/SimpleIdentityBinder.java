@@ -10,9 +10,11 @@ public class SimpleIdentityBinder implements IdentityBinder {
 
     @Override
     public String getEmailAddress(UserIdentity identity) {
-        /*if (identity.getInitials().equals("CD")) {
+        if (identity.getInitials().equals("CD")) {
             return "cduffau@axonic.fr";
-        }*/
+        } else if (identity.getInitials().equals("ME")) {
+            return "meusebe@axonic.fr";
+        }
 
         return "aaube@axonic.fr";
     }

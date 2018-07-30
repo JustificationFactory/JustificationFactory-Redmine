@@ -25,4 +25,8 @@ public class FreemarkerConfiguration {
     public static Configuration getConfiguration() {
         return configuration;
     }
+
+    private FreemarkerConfiguration() {
+        // This is a singleton.
+    }
 }

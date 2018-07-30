@@ -3,8 +3,9 @@ package fr.axonic.avek.redmine.processes.ranking;
 import fr.axonic.avek.redmine.processes.FreemarkerConfiguration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.mail.MessagingException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -12,6 +13,8 @@ import java.nio.charset.Charset;
 import java.time.LocalDate;
 
 public class RankingWikiGenerator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RankingWikiGenerator.class);
 
     public String generateMarkdown(RankingWikiData data) throws IOException {
         Template template = FreemarkerConfiguration.getConfiguration().getTemplate("ranking-wiki.ftl");
@@ -21,7 +24,7 @@ public class RankingWikiGenerator {
 
             return new String(bytes.toByteArray(), Charset.defaultCharset());
         } catch (TemplateException e) {
-            e.printStackTrace();
+            LOGGER.error("Unexpected template exception", e);
 
             return null;
         }

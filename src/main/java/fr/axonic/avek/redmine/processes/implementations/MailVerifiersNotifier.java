@@ -9,6 +9,8 @@ import fr.axonic.avek.redmine.processes.notifications.VerifiersNotification;
 import fr.axonic.avek.redmine.processes.notifications.VerifiersNotifier;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.mail.MessagingException;
 import java.io.ByteArrayOutputStream;
@@ -21,6 +23,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MailVerifiersNotifier extends VerifiersNotifier {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailVerifiersNotifier.class);
 
     private final MailSender sender;
     private final String redmineUrl;
@@ -53,7 +57,7 @@ public class MailVerifiersNotifier extends VerifiersNotifier {
 
             sender.sendEmail(identity, "Redmine Wiki issues", content);
         } catch (TemplateException e) {
-            e.printStackTrace();
+            LOGGER.error("Unexpected template exception", e);
         } catch (MessagingException e) {
             throw new IOException(e);
         }
