@@ -1,6 +1,8 @@
 package fr.axonic.avek.redmine.io.models;
 
-public class CredentialsDocument {
+import java.util.List;
+
+public class ConfigurationDocument {
 
     private String redmineUrl;
     private String redmineApiKey;
@@ -8,6 +10,7 @@ public class CredentialsDocument {
     private String emailPassword;
     private String emailHost;
     private String emailPort;
+    private List<String> projects;
 
     public String getRedmineUrl() {
         return redmineUrl;
@@ -55,5 +58,13 @@ public class CredentialsDocument {
 
     public void setEmailPort(String emailPort) {
         this.emailPort = emailPort;
+    }
+
+    public List<String> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<String> projects) {
+        this.projects = projects;
     }
 }

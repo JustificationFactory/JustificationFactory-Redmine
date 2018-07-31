@@ -1,0 +1,9 @@
+{
+  "redmineUrl":"",
+  "redmineApiKey":"",
+  "emailAddress": "",
+  "emailPassword": "",
+  "emailHost": "",
+  "emailPort": "",
+  "projects": []
+}

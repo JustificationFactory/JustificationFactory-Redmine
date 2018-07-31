@@ -1,6 +1,6 @@
 package fr.axonic.avek.redmine.io.communication;
 
-import fr.axonic.avek.redmine.io.models.CredentialsDocument;
+import fr.axonic.avek.redmine.io.models.ConfigurationDocument;
 import fr.axonic.avek.redmine.models.UserIdentity;
 
 import javax.mail.*;
@@ -10,10 +10,10 @@ import java.util.Properties;
 
 public class MailSender {
 
-    private final CredentialsDocument credentials;
+    private final ConfigurationDocument credentials;
     private final IdentityBinder identityBinder;
 
-    public MailSender(CredentialsDocument credentials, IdentityBinder identityBinder) {
+    public MailSender(ConfigurationDocument credentials, IdentityBinder identityBinder) {
         this.credentials = credentials;
         this.identityBinder = identityBinder;
     }
