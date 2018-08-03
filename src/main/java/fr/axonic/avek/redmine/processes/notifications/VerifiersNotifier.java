@@ -1,6 +1,7 @@
 package fr.axonic.avek.redmine.processes.notifications;
 
 import com.taskadapter.redmineapi.bean.WikiPage;
+import fr.axonic.avek.redmine.RankingSingleton;
 import fr.axonic.avek.redmine.Runner;
 import fr.axonic.avek.redmine.io.communication.IdentityBinder;
 import fr.axonic.avek.redmine.models.UserIdentity;
@@ -59,7 +60,7 @@ public abstract class VerifiersNotifier {
     }
 
     public void processNotifications() {
-        Runner.rankingData.setRanking(new UsersRanking.Builder(identityBinder).withNotifications(registeredNotifications).build());
+        RankingSingleton.rankingData.setRanking(new UsersRanking.Builder(identityBinder).withNotifications(registeredNotifications).build());
 
         registeredNotifications.forEach((user, notifications) -> {
             try {
