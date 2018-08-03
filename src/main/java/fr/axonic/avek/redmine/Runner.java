@@ -30,8 +30,6 @@ public class Runner {
     private static final String DEFAULT_CONFIGURATION = System.getProperty("user.home") + "/.avek/avek_redmine/configuration.json";
     private static final String DEFAULT_PROJECTS = System.getProperty("user.home") + "/.avek/avek_redmine/projects.json";
 
-    public static RankingWikiGenerator.RankingWikiData rankingData;
-
     public static void main(String[] args) throws ParseException, IOException, RedmineException {
         CommandLine arguments = parseArguments(args);
 
@@ -50,7 +48,7 @@ public class Runner {
             notifier.setCurrentProject(status.getProjectName());
             processor.processWiki(status);
 
-            System.out.println(new RankingWikiGenerator().generateMarkdown(rankingData));
+            System.out.println(new RankingWikiGenerator().generateMarkdown(RankingSingleton.rankingData));
         }
 
         // TODO Update projects file.

@@ -5,6 +5,7 @@ import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.WikiPage;
 import com.taskadapter.redmineapi.bean.WikiPageDetail;
+import fr.axonic.avek.redmine.RankingSingleton;
 import fr.axonic.avek.redmine.Runner;
 import fr.axonic.avek.redmine.io.models.ProjectsDocument;
 import fr.axonic.avek.redmine.models.ValidationDocument;
@@ -37,14 +38,14 @@ public class ProjectWikiProcessor {
     }
 
     public void processWiki(ProjectsDocument.ProjectStatus status) throws RedmineException {
-        Runner.rankingData = new RankingWikiGenerator.RankingWikiData();
-        Runner.rankingData.setDate(LocalDate.now());
-        Runner.rankingData.setProjectName(status.getProjectName());
+        RankingSingleton.rankingData = new RankingWikiGenerator.RankingWikiData();
+        RankingSingleton.rankingData.setDate(LocalDate.now());
+        RankingSingleton.rankingData.setProjectName(status.getProjectName());
 
-        List<WikiPage> pages = getUpdatedWikiPages(status);
+        List<WikiPage> pages = redmine.getWikiManager().getWikiPagesByProject(status.getProjectName());
 
         LOGGER.info("Fetched {} wiki pages.", pages.size());
-        Runner.rankingData.setTotalPages(pages.size());
+        RankingSingleton.rankingData.setTotalPages(pages.size());
 
         Map<WikiPage, WikiPageDetail> details = new HashMap<>();
         for (WikiPage page : pages) {
@@ -56,13 +57,13 @@ public class ProjectWikiProcessor {
         }
 
         LOGGER.info("Fetched details of {} pages.", details.size());
-        Runner.rankingData.setNotFoundPages(pages.size() - details.size());
+        RankingSingleton.rankingData.setNotFoundPages(pages.size() - details.size());
 
         List<ValidationDocument> validations = generateValidationDocuments(details);
 
         LOGGER.info("Generated {} validation documents.", validations.size());
-        Runner.rankingData.setWithoutApprovalPages(details.size() - validations.size());
-        Runner.rankingData.setNokStructurePages((int) validations.stream().filter(v -> v == ValidationDocument.INVALID_DOCUMENT).count());
+        RankingSingleton.rankingData.setWithoutApprovalPages(details.size() - validations.size());
+        RankingSingleton.rankingData.setNokStructurePages((int) validations.stream().filter(v -> v == ValidationDocument.INVALID_DOCUMENT).count());
 
         List<ValidationDocument> wellStructuredDocument = validations.stream()
                 .filter(v -> v != ValidationDocument.INVALID_DOCUMENT)
@@ -71,13 +72,13 @@ public class ProjectWikiProcessor {
         List<ValidationDocument> readyValidationsDocuments = filterValidationsAndNotify(wellStructuredDocument);
 
         LOGGER.info("Ready to send {} documents and their validations.", readyValidationsDocuments.size());
-        Runner.rankingData.setNokContentPages(wellStructuredDocument.size() - readyValidationsDocuments.size());
-        Runner.rankingData.setOkContentPages(readyValidationsDocuments.size());
+        RankingSingleton.rankingData.setNokContentPages(wellStructuredDocument.size() - readyValidationsDocuments.size());
+        RankingSingleton.rankingData.setOkContentPages(readyValidationsDocuments.size());
+
+        List<WikiPage> updatedPages = keepUpdatedPages(status, pages);
     }
 
-    private List<WikiPage> getUpdatedWikiPages(ProjectsDocument.ProjectStatus status) throws RedmineException {
-        List<WikiPage> pages = redmine.getWikiManager().getWikiPagesByProject(status.getProjectName());
-
+    private List<WikiPage> keepUpdatedPages(ProjectsDocument.ProjectStatus status, List<WikiPage> pages) {
         if (status.getLastExecutionTime() == null) {
             return pages;
         }
