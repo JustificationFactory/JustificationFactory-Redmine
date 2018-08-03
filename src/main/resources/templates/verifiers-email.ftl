@@ -1,6 +1,6 @@
 <p>Hello ${user.initials},</p>
 
-<p>You are involved in these issues in these issues on the Redmine Wiki of the project ${projectName}:</p>
+<p>You are involved in these issues on the Redmine Wiki of the project ${projectName}:</p>
 
 <ul>
 <#list issues as issue>

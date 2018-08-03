@@ -64,7 +64,9 @@ public abstract class VerifiersNotifier {
 
         registeredNotifications.forEach((user, notifications) -> {
             try {
-                processUserNotifications(user, notifications);
+                if (!notifications.isEmpty()) {
+                    processUserNotifications(user, notifications);
+                }
             } catch (IOException e) {
                 LOGGER.error("Failed to send the notifications to {}.", user.getInitials(), e);
             }
