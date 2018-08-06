@@ -10,6 +10,7 @@ public class ConfigurationDocument {
     private String emailPassword;
     private String emailHost;
     private String emailPort;
+    private String busUrl;
     private List<String> projects;
 
     public String getRedmineUrl() {
@@ -58,6 +59,14 @@ public class ConfigurationDocument {
 
     public void setEmailPort(String emailPort) {
         this.emailPort = emailPort;
+    }
+
+    public String getBusUrl() {
+        return busUrl;
+    }
+
+    public void setBusUrl(String busUrl) {
+        this.busUrl = busUrl;
     }
 
     public List<String> getProjects() {

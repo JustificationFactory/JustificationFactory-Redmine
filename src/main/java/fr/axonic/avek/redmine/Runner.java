@@ -14,6 +14,8 @@ import fr.axonic.avek.redmine.processes.ProjectWikiProcessor;
 import fr.axonic.avek.redmine.processes.implementations.MailVerifiersNotifier;
 import fr.axonic.avek.redmine.processes.implementations.SimpleValidationExtractor;
 import fr.axonic.avek.redmine.processes.ranking.RankingWikiGenerator;
+import fr.axonic.avek.redmine.processes.transmission.AvekBusCommunicator;
+import fr.axonic.avek.redmine.processes.transmission.RedmineSupportsTranslator;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +44,15 @@ public class Runner {
 
         MailVerifiersNotifier notifier = new MailVerifiersNotifier(identityBinder, configuration.getRedmineUrl(), sender);
 
-        ProjectWikiProcessor processor = new ProjectWikiProcessor(redmineManager, new SimpleValidationExtractor(), notifier);
+        RedmineSupportsTranslator translator = new RedmineSupportsTranslator(configuration);
+
+        AvekBusCommunicator communicator = new AvekBusCommunicator(translator, configuration);
+
+        ProjectWikiProcessor processor = new ProjectWikiProcessor(redmineManager, new SimpleValidationExtractor(), notifier, communicator);
 
         for (ProjectsDocument.ProjectStatus status : projects.getProjects()) {
             notifier.setCurrentProject(status.getProjectName());
+            translator.setCurrentProject(status.getProjectName());
             processor.processWiki(status);
 
             System.out.println(new RankingWikiGenerator().generateMarkdown(RankingSingleton.rankingData));

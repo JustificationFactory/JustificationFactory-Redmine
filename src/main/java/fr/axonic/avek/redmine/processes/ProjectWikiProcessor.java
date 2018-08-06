@@ -6,14 +6,15 @@ import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.WikiPage;
 import com.taskadapter.redmineapi.bean.WikiPageDetail;
 import fr.axonic.avek.redmine.RankingSingleton;
-import fr.axonic.avek.redmine.Runner;
 import fr.axonic.avek.redmine.io.models.ProjectsDocument;
 import fr.axonic.avek.redmine.models.ValidationDocument;
 import fr.axonic.avek.redmine.processes.notifications.VerifiersNotifier;
 import fr.axonic.avek.redmine.processes.ranking.RankingWikiGenerator;
+import fr.axonic.avek.redmine.processes.transmission.AvekBusCommunicator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,14 +31,16 @@ public class ProjectWikiProcessor {
     private final RedmineManager redmine;
     private final ValidationExtractor validationExtractor;
     private final VerifiersNotifier notifier;
+    private final AvekBusCommunicator communicator;
 
-    public ProjectWikiProcessor(RedmineManager redmine, ValidationExtractor validationExtractor, VerifiersNotifier notifier) {
+    public ProjectWikiProcessor(RedmineManager redmine, ValidationExtractor validationExtractor, VerifiersNotifier notifier, AvekBusCommunicator communicator) {
         this.redmine = redmine;
         this.validationExtractor = validationExtractor;
         this.notifier = notifier;
+        this.communicator = communicator;
     }
 
-    public void processWiki(ProjectsDocument.ProjectStatus status) throws RedmineException {
+    public void processWiki(ProjectsDocument.ProjectStatus status) throws RedmineException, IOException {
         RankingSingleton.rankingData = new RankingWikiGenerator.RankingWikiData();
         RankingSingleton.rankingData.setDate(LocalDate.now());
         RankingSingleton.rankingData.setProjectName(status.getProjectName());
@@ -75,7 +78,10 @@ public class ProjectWikiProcessor {
         RankingSingleton.rankingData.setNokContentPages(wellStructuredDocument.size() - readyValidationsDocuments.size());
         RankingSingleton.rankingData.setOkContentPages(readyValidationsDocuments.size());
 
-        List<WikiPage> updatedPages = keepUpdatedPages(status, pages);
+        List<WikiPage> updatedPages = keepUpdatedPages(status,
+                readyValidationsDocuments.stream().map(ValidationDocument::getWikiPage).collect(Collectors.toList()));
+
+        sendToBus(updatedPages);
     }
 
     private List<WikiPage> keepUpdatedPages(ProjectsDocument.ProjectStatus status, List<WikiPage> pages) {
@@ -108,5 +114,9 @@ public class ProjectWikiProcessor {
         notifier.processNotifications();
 
         return filtered;
+    }
+
+    private void sendToBus(List<WikiPage> pages) throws IOException {
+        communicator.sendToBus(pages);
     }
 }
