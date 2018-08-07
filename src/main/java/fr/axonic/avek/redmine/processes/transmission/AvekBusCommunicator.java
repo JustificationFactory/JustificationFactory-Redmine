@@ -2,7 +2,6 @@ package fr.axonic.avek.redmine.processes.transmission;
 
 import com.taskadapter.redmineapi.bean.WikiPage;
 import fr.axonic.avek.engine.support.Support;
-import fr.axonic.avek.engine.support.evidence.Evidence;
 import fr.axonic.avek.redmine.io.models.ConfigurationDocument;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -32,14 +31,12 @@ public class AvekBusCommunicator {
     }
 
     public void sendToBus(List<WikiPage> pages) throws IOException {
-        List<Support> evidences = pages.stream()
-                .flatMap(p -> Stream.of(translator.translateEvidence(p), translator.translateApproval(p)))
-                .collect(Collectors.toList());
-
         TransmittedSupports supports = new TransmittedSupports();
-        supports.setSupports(evidences);
+        supports.setSupports(pages.stream()
+                .flatMap(p -> Stream.of(translator.translateEvidence(p), translator.translateApproval(p)))
+                .collect(Collectors.toList()));
 
-        /*URL url = new URL(configuration.getBusUrl() + "/supports");
+        URL url = new URL(configuration.getBusUrl() + "/supports");
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -49,18 +46,11 @@ public class AvekBusCommunicator {
 
         OutputStream wr = new DataOutputStream(connection.getOutputStream());
 
-        RedmineMapperProvider.getMapper().writeValue(wr, evidences);
+        new RedmineMapperProvider().getContext(null).writeValue(wr, supports);
         wr.flush();
         wr.close();
 
-        LOGGER.info("Response code from bus: {} ; message: {}", connection.getResponseCode(), IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset()));
-        connection.disconnect();*/
-
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        RedmineMapperProvider.getMapper().writeValue(os, evidences);
-        os.flush();
-        os.close();
-
-        System.out.println(new String(os.toByteArray()));
+        LOGGER.info("Response code from bus: {} ; message: {}", connection.getResponseCode(), IOUtils.toString(connection.getInputStream(), Charset.defaultCharset()));
+        connection.disconnect();
     }
 }

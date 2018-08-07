@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
-public class RedmineMapperProvider {
+import javax.ws.rs.ext.ContextResolver;
+
+public class RedmineMapperProvider implements ContextResolver<ObjectMapper> {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -17,7 +19,8 @@ public class RedmineMapperProvider {
         MAPPER.setAnnotationIntrospector(AnnotationIntrospector.pair(aiJaxb, aiJackson));
     }
 
-    public static ObjectMapper getMapper() {
+    @Override
+    public ObjectMapper getContext(Class<?> aClass) {
         return MAPPER;
     }
 }
