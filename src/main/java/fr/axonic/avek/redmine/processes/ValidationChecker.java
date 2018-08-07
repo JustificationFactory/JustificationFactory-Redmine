@@ -34,7 +34,6 @@ public class ValidationChecker {
                 .filter(s -> s.getSignatoryRole() == UserRole.AUTHOR)
                 .collect(Collectors.toList());
 
-
         if (authorsSignatures.isEmpty() || authorsSignatures.stream().anyMatch(s -> s.getSignatory() == null)) {
             notifier.noAuthor(document.getWikiPage());
             return false;
@@ -44,14 +43,21 @@ public class ValidationChecker {
     }
 
     private boolean authorsConfirmed(ValidationDocument document) {
-        return document.getSignatures().stream()
-                .filter(s -> s.getSignatoryRole() == UserRole.AUTHOR)
-                .allMatch(ValidationSignature::isConfirmed);
+        boolean ok = true;
+
+        for (ValidationSignature signature : document.getSignatures()) {
+            if (signature.getSignatoryRole() == UserRole.AUTHOR && !signature.isConfirmed()) {
+                notifier.notSignedAsAuthor(signature.getSignatory(), document.getWikiPage());
+                ok = false;
+            }
+        }
+
+        return ok;
     }
 
     private boolean verifySignature(ValidationDocument document, ValidationSignature signature) {
         if (!signature.isConfirmed()) {
-            notifier.notSigned(signature.getSignatory(), document.getWikiPage());
+            notifier.notSignedAsVerifier(signature.getSignatory(), document.getWikiPage());
 
             return false;
         }

@@ -2,7 +2,6 @@ package fr.axonic.avek.redmine.processes.notifications;
 
 import com.taskadapter.redmineapi.bean.WikiPage;
 import fr.axonic.avek.redmine.RankingSingleton;
-import fr.axonic.avek.redmine.Runner;
 import fr.axonic.avek.redmine.io.communication.IdentityBinder;
 import fr.axonic.avek.redmine.models.UserIdentity;
 import fr.axonic.avek.redmine.processes.ranking.UsersRanking;
@@ -35,8 +34,12 @@ public abstract class VerifiersNotifier {
         makeNotification(NotificationTopic.SIGNED_BEFORE_AUTHOR_VALIDATION, user, wikiPage);
     }
 
-    public void notSigned(UserIdentity user, WikiPage wikiPage) {
-        makeNotification(NotificationTopic.NOT_SIGNED, user, wikiPage);
+    public void notSignedAsAuthor(UserIdentity user, WikiPage wikiPage) {
+        makeNotification(NotificationTopic.NOT_SIGNED_AS_AUTHOR, user, wikiPage);
+    }
+
+    public void notSignedAsVerifier(UserIdentity user, WikiPage wikiPage) {
+        makeNotification(NotificationTopic.NOT_SIGNED_AS_VERIFIER, user, wikiPage);
     }
 
     public void ok(UserIdentity user, WikiPage wikiPage) {

@@ -98,7 +98,7 @@ public class UsersRanking {
                 UserContribution contribution = new UserContribution();
                 contribution.user = user;
                 contribution.numberOfValidationFailures = userNotifications.size();
-                contribution.numberOfUnsigned = (int) userNotifications.stream().filter(n -> n.getTopic() == NotificationTopic.NOT_SIGNED).count();
+                contribution.numberOfUnsigned = (int) userNotifications.stream().filter(n -> n.getTopic() == NotificationTopic.NOT_SIGNED_AS_VERIFIER).count();
                 contribution.numberOfWrongDates = (int) userNotifications.stream().filter(n -> n.getTopic() == NotificationTopic.MISSING_DATE).count();
                 contribution.numberOfWellSigned = (int) userNotifications.stream().filter(n -> n.getTopic() == NotificationTopic.OK).count();
 

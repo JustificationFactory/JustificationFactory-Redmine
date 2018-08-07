@@ -21,7 +21,7 @@ public class SimpleIdentityBinder implements IdentityBinder {
 
     @Override
     public List<UserIdentity> getKnownUsers() {
-        return Stream.of("AA", "CD", "ME", "JP", "MC", "LW", "FS", "JLD", "LG", "HC", "GS")
+        return Stream.of("AA", "CD", "ME", "JP", "MC", "LW", "FS", "JLD", "LG", "HC", "GS", "QUALITY")
                 .map(UserIdentity::new)
                 .collect(Collectors.toList());
     }

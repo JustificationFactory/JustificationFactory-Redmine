@@ -78,7 +78,8 @@ public class SimpleValidationExtractor implements ValidationExtractor {
     }
 
     private String[] parseArrayLine(String line) {
-        String[] split = line.trim().substring(1, line.length() - 1).split("\\|");
+        line = line.trim();
+        String[] split = line.substring(1, line.length() - 1).split("\\|");
 
         for (int i = 0; i < split.length; i++) {
             split[i] = split[i].trim();
