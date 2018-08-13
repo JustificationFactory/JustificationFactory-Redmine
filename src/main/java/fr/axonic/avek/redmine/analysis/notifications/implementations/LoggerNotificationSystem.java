@@ -6,16 +6,11 @@ import fr.axonic.avek.redmine.users.UserIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class LoggerNotificationSystem extends NotificationSystem {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggerNotificationSystem.class);
-
-    public LoggerNotificationSystem(LocalDateTime minimumNotifiableDate) {
-        super(minimumNotifiableDate);
-    }
 
     @Override
     protected void notifyUser(UserIdentity identity, List<UserNotification> accumulatedNotifications) {

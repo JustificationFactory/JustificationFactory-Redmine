@@ -53,7 +53,7 @@ public class AxonicApprovalExtractor extends ApprovalExtractor {
             LOGGER.info("The page `{}` does not follow the structure.", wikiPage.getTitle());
             LOGGER.error("Exception while extracting the validation document of `{}`.", wikiPage.getTitle(), e);
 
-            return Optional.of(ApprovalDocument.INVALID_DOCUMENT);
+            return Optional.of(new ApprovalDocument(wikiPage));
         }
     }
 

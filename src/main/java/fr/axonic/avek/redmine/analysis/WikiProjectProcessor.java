@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,18 +36,21 @@ public class WikiProjectProcessor {
     private final AvekBusTransmitter transmitter;
     private final IdentityBinder identityBinder;
     private final ProjectStatus studiedProject;
+    private final LocalDateTime minimumVerificationDate;
 
     public WikiProjectProcessor(RedmineManager redmine,
                                 ApprovalExtractor approvalExtractor,
                                 NotificationSystem notifier,
                                 AvekBusTransmitter transmitter,
-                                IdentityBinder identityBinder, ProjectStatus studiedProject) {
+                                IdentityBinder identityBinder,
+                                ProjectStatus studiedProject, LocalDateTime minimumVerificationDate) {
         this.redmine = redmine;
         this.approvalExtractor = approvalExtractor;
         this.notifier = notifier;
         this.transmitter = transmitter;
         this.identityBinder = identityBinder;
         this.studiedProject = studiedProject;
+        this.minimumVerificationDate = minimumVerificationDate;
     }
 
     public AnalysisReport runAnalysis() throws RedmineException, IOException {
@@ -78,7 +82,7 @@ public class WikiProjectProcessor {
         LOGGER.info("Built {} pages approvals.", generatedApprovals.size());
         report.setWikiPagesWithApproval(generatedApprovals.size());
 
-        ApprovalVerifier approvalVerifier = new ApprovalVerifier(notifier, identityBinder, report);
+        ApprovalVerifier approvalVerifier = new ApprovalVerifier(minimumVerificationDate, notifier, identityBinder, report);
 
         List<ApprovalDocument> validApprovals = generatedApprovals.stream()
                 .filter(approval -> {
@@ -110,6 +114,7 @@ public class WikiProjectProcessor {
         private NotificationSystem notifier;
         private AvekBusTransmitter transmitter;
         private IdentityBinder identityBinder;
+        private LocalDateTime minimumVerificationDate;
 
         Builder(ConfigurationDocument runConfiguration) {
             this.runConfiguration = runConfiguration;
@@ -139,6 +144,12 @@ public class WikiProjectProcessor {
             return this;
         }
 
+        public Builder from(LocalDateTime minimumVerificationDate) {
+            this.minimumVerificationDate = minimumVerificationDate;
+
+            return this;
+        }
+
         public WikiProjectProcessor forProject(ProjectStatus status) {
             Objects.requireNonNull(approvalExtractor);
             Objects.requireNonNull(identityBinder);
@@ -154,7 +165,11 @@ public class WikiProjectProcessor {
                 transmitter = new SilentAvekBusTransmitter(new RedmineSupportsTranslator(runConfiguration, status));
             }
 
-            return new WikiProjectProcessor(redmine, approvalExtractor, notifier, transmitter, identityBinder, status);
+            if (minimumVerificationDate == null) {
+                minimumVerificationDate = LocalDateTime.MIN;
+            }
+
+            return new WikiProjectProcessor(redmine, approvalExtractor, notifier, transmitter, identityBinder, status, minimumVerificationDate);
         }
     }
 }

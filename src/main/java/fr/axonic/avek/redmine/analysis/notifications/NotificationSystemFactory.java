@@ -8,8 +8,6 @@ import fr.axonic.avek.redmine.configuration.NotifierType;
 import fr.axonic.avek.redmine.configuration.ProjectStatus;
 import fr.axonic.avek.redmine.utils.MailSender;
 
-import java.time.LocalDateTime;
-
 public class NotificationSystemFactory {
 
     private static final NotificationSystemFactory INSTANCE = new NotificationSystemFactory();
@@ -22,12 +20,12 @@ public class NotificationSystemFactory {
         // Singleton.
     }
 
-    public NotificationSystem create(NotifierType type, LocalDateTime minimumNotifiableDate, ConfigurationDocument configuration, ProjectStatus project) {
+    public NotificationSystem create(NotifierType type, ConfigurationDocument configuration, ProjectStatus project) {
         switch (type) {
             case MAIL:
-                return new MailNotificationSystem(minimumNotifiableDate, new MailSender(configuration), configuration.getRedmineUrl(), project);
+                return new MailNotificationSystem(new MailSender(configuration), configuration.getRedmineUrl(), project);
             case LOGGER:
-                return new LoggerNotificationSystem(minimumNotifiableDate);
+                return new LoggerNotificationSystem();
             case SILENT:
             default:
                 return new SilentNotificationSystem();

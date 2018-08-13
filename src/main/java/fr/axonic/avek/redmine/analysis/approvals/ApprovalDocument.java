@@ -7,8 +7,6 @@ import java.util.List;
 
 public class ApprovalDocument {
 
-    public static final ApprovalDocument INVALID_DOCUMENT = new ApprovalDocument(null);
-
     private final WikiPage wikiPage;
     private final List<ApprovalSignature> signatures;
 

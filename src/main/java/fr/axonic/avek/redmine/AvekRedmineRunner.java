@@ -11,11 +11,8 @@ import fr.axonic.avek.redmine.analysis.notifications.NotificationSystemFactory;
 import fr.axonic.avek.redmine.analysis.reporting.AnalysisFormatter;
 import fr.axonic.avek.redmine.analysis.reporting.AnalysisReport;
 import fr.axonic.avek.redmine.configuration.*;
-import fr.axonic.avek.redmine.transmission.RedmineSupportsTranslator;
 import fr.axonic.avek.redmine.transmission.bus.AvekBusTransmitter;
 import fr.axonic.avek.redmine.transmission.bus.AvekBusTransmitterFactory;
-import fr.axonic.avek.redmine.transmission.bus.ConcreteAvekBusTransmitter;
-import fr.axonic.avek.redmine.transmission.bus.SilentAvekBusTransmitter;
 import fr.axonic.avek.redmine.users.bindings.IdentityBinder;
 import fr.axonic.avek.redmine.users.bindings.SimpleIdentityBinder;
 import jcifs.smb.SmbFile;
@@ -69,13 +66,14 @@ public class AvekRedmineRunner {
                 IdentityBinder identityBinder = new SimpleIdentityBinder();
                 ApprovalExtractor extractor = new AxonicApprovalExtractor(identityBinder);
                 AvekBusTransmitter transmitter = AvekBusTransmitterFactory.getInstance().create(transmitterType, configuration, status.get());
-                NotificationSystem notifier = NotificationSystemFactory.getInstance().create(notifierType, minimumDate, configuration, status.get());
+                NotificationSystem notifier = NotificationSystemFactory.getInstance().create(notifierType, configuration, status.get());
 
                 AnalysisReport report = WikiProjectProcessor.builder(configuration)
                         .with(identityBinder)
                         .with(transmitter)
                         .with(extractor)
                         .with(notifier)
+                        .from(minimumDate)
                         .forProject(status.get())
                         .runAnalysis();
 

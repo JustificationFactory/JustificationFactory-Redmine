@@ -17,7 +17,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,7 @@ public class MailNotificationSystem extends NotificationSystem {
     private final String redmineUrl;
     private final ProjectStatus project;
 
-    public MailNotificationSystem(LocalDateTime minimumNotifiableDate, MailSender sender, String redmineUrl, ProjectStatus project) {
-        super(minimumNotifiableDate);
+    public MailNotificationSystem(MailSender sender, String redmineUrl, ProjectStatus project) {
         this.sender = sender;
         this.redmineUrl = redmineUrl;
         this.project = project;

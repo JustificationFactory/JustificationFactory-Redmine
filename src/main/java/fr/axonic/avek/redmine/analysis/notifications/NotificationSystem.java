@@ -5,8 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -15,11 +13,8 @@ public abstract class NotificationSystem {
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSystem.class);
 
     private Map<UserIdentity, List<UserNotification>> registeredNotifications;
-    private final LocalDateTime minimumNotifiableDate;
 
-    public NotificationSystem(LocalDateTime minimumNotifiableDate) {
-        this.minimumNotifiableDate = minimumNotifiableDate;
-
+    public NotificationSystem() {
         registeredNotifications = new HashMap<>();
     }
 
@@ -39,7 +34,6 @@ public abstract class NotificationSystem {
         registeredNotifications.forEach((user, notifications) -> {
             List<UserNotification> usefulNotifications = notifications.stream()
                     .filter(notification -> notification.getType() != NotificationType.OK)
-                    .filter(notification -> LocalDateTime.ofInstant(notification.getPage().getUpdatedOn().toInstant(), ZoneId.systemDefault()).isAfter(minimumNotifiableDate))
                     .sorted(Comparator.comparing(o -> ((UserNotification) o).getPage().getUpdatedOn()).reversed())
                     .collect(Collectors.toList());
 

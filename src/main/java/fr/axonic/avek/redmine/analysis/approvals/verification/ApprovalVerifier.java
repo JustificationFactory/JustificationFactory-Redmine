@@ -11,23 +11,31 @@ import fr.axonic.avek.redmine.users.UserIdentity;
 import fr.axonic.avek.redmine.users.UserRole;
 import fr.axonic.avek.redmine.users.bindings.IdentityBinder;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ApprovalVerifier {
 
+    private final LocalDateTime minimumVerificationDate;
     private final NotificationSystem notifier;
     private final IdentityBinder identityBinder;
     private final AnalysisReport report;
 
-    public ApprovalVerifier(NotificationSystem notifier, IdentityBinder identityBinder, AnalysisReport report) {
+    public ApprovalVerifier(LocalDateTime minimumVerificationDate, NotificationSystem notifier, IdentityBinder identityBinder, AnalysisReport report) {
+        this.minimumVerificationDate = minimumVerificationDate;
         this.notifier = notifier;
         this.identityBinder = identityBinder;
         this.report = report;
     }
 
     public boolean verify(ApprovalDocument approval) {
-        if (approval == ApprovalDocument.INVALID_DOCUMENT) {
+        if (minimumVerificationDate.isAfter(LocalDateTime.ofInstant(approval.getWikiPage().getUpdatedOn().toInstant(), ZoneId.systemDefault()))) {
+            return true;
+        }
+
+        if (approval.getSignatures().isEmpty()) {
             // The document does not comply to the formalism.
             return false;
         }
