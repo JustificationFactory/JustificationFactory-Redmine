@@ -114,11 +114,8 @@ public class AvekRedmineRunner {
     }
 
     private static ProjectsDocument parseProjects(File projectsFile, ConfigurationDocument runConfiguration) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-
         if (projectsFile.exists()) {
-            ProjectsDocument projects = mapper.readValue(projectsFile, ProjectsDocument.class);
+            ProjectsDocument projects = MAPPER.readValue(projectsFile, ProjectsDocument.class);
             LOGGER.info("Projects read from `{}`.", projectsFile.getAbsolutePath());
             return projects;
         } else {
@@ -126,8 +123,8 @@ public class AvekRedmineRunner {
 
             runConfiguration.getProjects().forEach(project -> projects.getProjects().add(new ProjectStatus(project, LocalDateTime.MIN)));
 
-            if (projectsFile.getParentFile().mkdirs() && projectsFile.createNewFile()) {
-                mapper.writeValue(projectsFile, projects);
+            if (projectsFile.createNewFile()) {
+                MAPPER.writeValue(projectsFile, projects);
             }
 
             return projects;
