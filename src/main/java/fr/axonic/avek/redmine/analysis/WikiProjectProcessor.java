@@ -7,8 +7,8 @@ import com.taskadapter.redmineapi.RedmineManagerFactory;
 import com.taskadapter.redmineapi.bean.WikiPage;
 import com.taskadapter.redmineapi.bean.WikiPageDetail;
 import fr.axonic.avek.redmine.analysis.approvals.ApprovalDocument;
-import fr.axonic.avek.redmine.analysis.approvals.verification.ApprovalVerifier;
 import fr.axonic.avek.redmine.analysis.approvals.extraction.ApprovalExtractor;
+import fr.axonic.avek.redmine.analysis.approvals.verification.ApprovalVerifier;
 import fr.axonic.avek.redmine.analysis.notifications.NotificationSystem;
 import fr.axonic.avek.redmine.analysis.notifications.implementations.SilentNotificationSystem;
 import fr.axonic.avek.redmine.analysis.reporting.AnalysisReport;
@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class WikiProjectProcessor {
 

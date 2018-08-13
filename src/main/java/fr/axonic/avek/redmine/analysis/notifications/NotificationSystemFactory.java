@@ -28,6 +28,7 @@ public class NotificationSystemFactory {
                 return new MailNotificationSystem(minimumNotifiableDate, new MailSender(configuration), configuration.getRedmineUrl(), project);
             case LOGGER:
                 return new LoggerNotificationSystem(minimumNotifiableDate);
+            case SILENT:
             default:
                 return new SilentNotificationSystem();
         }

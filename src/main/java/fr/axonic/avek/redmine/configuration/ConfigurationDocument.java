@@ -11,6 +11,7 @@ public class ConfigurationDocument {
     private String emailHost;
     private String emailPort;
     private String busUrl;
+    private String remoteRankingFolder;
     private List<String> projects;
 
     public String getRedmineUrl() {
@@ -67,6 +68,14 @@ public class ConfigurationDocument {
 
     public void setBusUrl(String busUrl) {
         this.busUrl = busUrl;
+    }
+
+    public String getRemoteRankingFolder() {
+        return remoteRankingFolder;
+    }
+
+    public void setRemoteRankingFolder(String remoteRankingFolder) {
+        this.remoteRankingFolder = remoteRankingFolder;
     }
 
     public List<String> getProjects() {
