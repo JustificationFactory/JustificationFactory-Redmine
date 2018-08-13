@@ -23,7 +23,7 @@
         </div>
 
         <script>
-            if (${wikiPagesWithApproval} * 100 / ${approvalsInError} > 20) {
+            if (${approvalsInError} * 100 / ${wikiPagesWithApproval} > 20) {
                 document.body.style.backgroundColor = 'rgb(252, 232, 232)'
             }
 

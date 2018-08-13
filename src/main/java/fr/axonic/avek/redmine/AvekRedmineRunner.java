@@ -99,6 +99,11 @@ public class AvekRedmineRunner {
         notifierOption.setRequired(false);
         options.addOption(notifierOption);
 
+        Option dateOption = new Option("d", DATE_OPTION, true, "Minimum date of verification");
+        dateOption.setRequired(false);
+        options.addOption(dateOption);
+
+
         Option transmitterOption = new Option("t", TRANSMITTER_OPTION, true, "Type of transmitter");
         transmitterOption.setRequired(false);
         options.addOption(transmitterOption);
