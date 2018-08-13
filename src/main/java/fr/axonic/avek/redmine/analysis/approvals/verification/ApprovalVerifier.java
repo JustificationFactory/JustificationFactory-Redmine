@@ -1,12 +1,13 @@
 package fr.axonic.avek.redmine.analysis.approvals.verification;
 
 import com.taskadapter.redmineapi.bean.WikiPage;
-import fr.axonic.avek.redmine.analysis.reporting.AnalysisReport;
 import fr.axonic.avek.redmine.analysis.approvals.ApprovalDocument;
 import fr.axonic.avek.redmine.analysis.approvals.ApprovalSignature;
+import fr.axonic.avek.redmine.analysis.notifications.NotificationLevel;
 import fr.axonic.avek.redmine.analysis.notifications.NotificationSystem;
 import fr.axonic.avek.redmine.analysis.notifications.NotificationType;
 import fr.axonic.avek.redmine.analysis.notifications.UserNotification;
+import fr.axonic.avek.redmine.analysis.reporting.AnalysisReport;
 import fr.axonic.avek.redmine.users.UserIdentity;
 import fr.axonic.avek.redmine.users.UserRole;
 import fr.axonic.avek.redmine.users.bindings.IdentityBinder;
@@ -31,10 +32,6 @@ public class ApprovalVerifier {
     }
 
     public boolean verify(ApprovalDocument approval) {
-        if (minimumVerificationDate.isAfter(LocalDateTime.ofInstant(approval.getWikiPage().getUpdatedOn().toInstant(), ZoneId.systemDefault()))) {
-            return true;
-        }
-
         if (approval.getSignatures().isEmpty()) {
             // The document does not comply to the formalism.
             return false;
@@ -45,9 +42,15 @@ public class ApprovalVerifier {
             return false;
         }
 
-        return approval.getSignatures().stream()
+        boolean signaturesOk =  approval.getSignatures().stream()
                 .map(s -> verifySignature(approval, s))
                 .reduce(Boolean::logicalAnd).orElse(true);
+
+        if (isIgnoredDocument(approval.getWikiPage())) {
+            return true;
+        } else {
+            return signaturesOk;
+        }
     }
 
     private boolean hasAuthors(ApprovalDocument document) {
@@ -118,7 +121,15 @@ public class ApprovalVerifier {
     }
 
     private void notify(UserNotification notification) {
+        if (isIgnoredDocument(notification.getPage()) && notification.getType().getLevel() != NotificationLevel.ERROR) {
+            return;
+        }
+
         report.acknowledge(notification);
         notifier.register(notification);
+    }
+
+    private boolean isIgnoredDocument(WikiPage page) {
+        return minimumVerificationDate.isAfter(LocalDateTime.ofInstant(page.getUpdatedOn().toInstant(), ZoneId.systemDefault()));
     }
 }
