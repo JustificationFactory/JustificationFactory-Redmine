@@ -3,6 +3,7 @@ package fr.axonic.avek.redmine.analysis.approvals.verification;
 import com.taskadapter.redmineapi.bean.WikiPage;
 import fr.axonic.avek.redmine.analysis.approvals.ApprovalDocument;
 import fr.axonic.avek.redmine.analysis.approvals.ApprovalSignature;
+import fr.axonic.avek.redmine.analysis.approvals.extraction.ApprovalExtractor;
 import fr.axonic.avek.redmine.analysis.notifications.NotificationLevel;
 import fr.axonic.avek.redmine.analysis.notifications.NotificationSystem;
 import fr.axonic.avek.redmine.analysis.notifications.NotificationType;
@@ -12,9 +13,11 @@ import fr.axonic.avek.redmine.users.UserIdentity;
 import fr.axonic.avek.redmine.users.UserRole;
 import fr.axonic.avek.redmine.users.bindings.IdentityBinder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ApprovalVerifier {
@@ -88,7 +91,16 @@ public class ApprovalVerifier {
 
         boolean ok = true;
 
-        if (!signature.getSignedDate().isPresent()) {
+        Optional<LocalDate> signatureSignedDate = signature.getSignedDate();
+
+        if (signatureSignedDate.isPresent()) {
+            LocalDate signedDate = signatureSignedDate.get();
+
+            if (signedDate == ApprovalExtractor.WRONG_DATE) {
+                wrongDate(document.getWikiPage(), signature.getSignatory());
+                ok = false;
+            }
+        } else {
             missingDate(document.getWikiPage(), signature.getSignatory());
             ok = false;
         }
@@ -114,6 +126,10 @@ public class ApprovalVerifier {
 
     private void notSignedAsVerifier(WikiPage page, UserIdentity user) {
         notify(new UserNotification(user, page, NotificationType.NOT_SIGNED_AS_VERIFIER));
+    }
+
+    private void wrongDate(WikiPage page, UserIdentity user) {
+        notify(new UserNotification(user, page, NotificationType.WRONG_DATE));
     }
 
     private void missingDate(WikiPage page, UserIdentity user) {

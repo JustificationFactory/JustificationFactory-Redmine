@@ -2,7 +2,8 @@ package fr.axonic.avek.redmine.analysis.notifications;
 
 public enum NotificationType {
 
-    MISSING_DATE(NotificationLevel.WARNING),
+    MISSING_DATE(NotificationLevel.ERROR),
+    WRONG_DATE(NotificationLevel.WARNING),
     NOT_SIGNED_AS_AUTHOR(NotificationLevel.WARNING),
     NOT_SIGNED_AS_VERIFIER(NotificationLevel.ERROR),
     NO_AUTHOR(NotificationLevel.ERROR),

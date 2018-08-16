@@ -156,12 +156,16 @@ public class AxonicApprovalExtractor extends ApprovalExtractor {
         String[] dateSplit = dateString.split(":");
         dateString = dateSplit.length > 1 ? dateSplit[1].trim() : "";
 
+        if (dateString.trim().isEmpty()) {
+            return null;
+        }
+
         try {
             return LocalDate.parse(dateString.trim(), FORMATTER);
         } catch (DateTimeParseException e) {
             LOGGER.error("`{}` is not a valid date", dateString, e);
 
-            return null;
+            return WRONG_DATE;
         }
     }
 

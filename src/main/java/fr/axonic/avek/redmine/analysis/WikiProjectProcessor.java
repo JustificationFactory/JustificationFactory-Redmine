@@ -72,7 +72,6 @@ public class WikiProjectProcessor {
         LOGGER.info("Fetched details of {} pages.", pagesDetails.size());
         report.setTotalWikiPages(pagesDetails.size());
 
-
         List<ApprovalDocument> generatedApprovals = pagesDetails.entrySet().stream()
                 .map(tuple -> approvalExtractor.extract(tuple.getKey(), tuple.getValue()))
                 .filter(Optional::isPresent)
@@ -92,6 +91,7 @@ public class WikiProjectProcessor {
 
                     return isValid;
                 })
+                .sorted(Comparator.comparing(o -> o.getWikiPage().getUpdatedOn()))
                 .collect(Collectors.toList());
 
         LOGGER.info("Built and validated {} pages approvals.", validApprovals.size());
