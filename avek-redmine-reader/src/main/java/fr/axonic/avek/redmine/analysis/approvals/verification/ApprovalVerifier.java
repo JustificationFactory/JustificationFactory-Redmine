@@ -37,12 +37,12 @@ public class ApprovalVerifier {
     public boolean verify(ApprovalDocument approval) {
         if (approval.getSignatures().isEmpty()) {
             // The document does not comply to the formalism.
-            return false;
+            return isIgnoredDocument(approval.getWikiPage());
         }
 
         if (!hasAuthors(approval) || !authorsConfirmed(approval)) {
             // The authors have not locked the document.
-            return false;
+            return isIgnoredDocument(approval.getWikiPage());
         }
 
         boolean signaturesOk =  approval.getSignatures().stream()

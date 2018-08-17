@@ -6,7 +6,6 @@ import fr.axonic.avek.redmine.analysis.approvals.ApprovalDocument;
 import fr.axonic.avek.redmine.users.bindings.IdentityBinder;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Optional;
 

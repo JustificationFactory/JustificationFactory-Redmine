@@ -35,7 +35,7 @@ public class AxonicApprovalExtractor extends ApprovalExtractor {
     public Optional<ApprovalDocument> extract(WikiPage wikiPage, WikiPageDetail pageDetail) {
         if (Arrays.asList(IGNORED_FILES).contains(wikiPage.getTitle())) {
             LOGGER.info("The page `{}` does not follow the structure.", wikiPage.getTitle());
-            return Optional.empty();
+            return Optional.of(new ApprovalDocument(wikiPage));
         }
 
         String context = pageDetail.getText();
