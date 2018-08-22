@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>avek-redmine-reader</module>
+        <module>avek-redmine-masterfile-builder</module>
     </modules>
 
     <name>AVEK Redmine</name>

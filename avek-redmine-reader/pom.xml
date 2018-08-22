@@ -30,7 +30,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>fr.axonic.avek.redmine.AvekRedmineRunner</mainClass>
+                            <mainClass>fr.axonic.avek.redmine.reader.AvekRedmineRunner</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
