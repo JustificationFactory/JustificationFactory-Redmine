@@ -3,6 +3,8 @@ package fr.axonic.jf.redmine.masterfile;
 import fr.axonic.jf.redmine.masterfile.extractors.MasterFileExtractor;
 import fr.axonic.jf.redmine.masterfile.formatters.MasterFileFormatter;
 
+import java.io.IOException;
+
 public class MasterFileGenerator {
 
     private MasterFileExtractor extractor;
@@ -14,6 +16,10 @@ public class MasterFileGenerator {
     }
 
     public void execute() {
-        // TODO
+        try {
+            System.out.println(formatter.format(extractor.extract()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

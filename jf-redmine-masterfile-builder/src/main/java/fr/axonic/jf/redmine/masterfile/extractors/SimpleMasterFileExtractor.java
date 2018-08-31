@@ -17,12 +17,14 @@ import java.util.Optional;
 
 public class SimpleMasterFileExtractor implements MasterFileExtractor {
 
-    private final String jfServiceUrl;
-    private final String justificationSystemId;
+    private static final String TECHNICAL_SPECIFICATIONS_ID = "ST";
 
-    public SimpleMasterFileExtractor(String jfServiceUrl, String justificationSystemId) {
+    private final String jfServiceUrl;
+    private final String projectName;
+
+    public SimpleMasterFileExtractor(String jfServiceUrl, String projectName) {
         this.jfServiceUrl = jfServiceUrl;
-        this.justificationSystemId = justificationSystemId;
+        this.projectName = projectName;
     }
 
     @Override
@@ -47,11 +49,11 @@ public class SimpleMasterFileExtractor implements MasterFileExtractor {
     }
 
     private String getProjectName() {
-        return justificationSystemId;
+        return projectName;
     }
 
     private Optional<List<Pair<Pattern,JustificationStep>>> getMatrix() throws IOException {
-        URL url = new URL(jfServiceUrl + "/" + justificationSystemId + "/matrix");
+        URL url = new URL(jfServiceUrl + "/" + TECHNICAL_SPECIFICATIONS_ID + "/matrix");
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
