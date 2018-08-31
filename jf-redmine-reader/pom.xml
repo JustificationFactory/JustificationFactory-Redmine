@@ -31,7 +31,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>fr.axonic.avek.redmine.reader.AvekRedmineRunner</mainClass>
+                            <mainClass>fr.axonic.jf.redmine.reader.JustificationFactoryRedmineRunner</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
