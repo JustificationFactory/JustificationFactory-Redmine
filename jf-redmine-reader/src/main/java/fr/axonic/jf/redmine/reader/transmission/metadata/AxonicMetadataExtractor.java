@@ -3,19 +3,19 @@ package fr.axonic.jf.redmine.reader.transmission.metadata;
 import com.taskadapter.redmineapi.bean.WikiPage;
 import fr.axonic.avek.instance.redmine.RedmineDocument;
 import fr.axonic.jf.redmine.reader.analysis.approvals.ApprovalDocument;
-import fr.axonic.jf.redmine.reader.configuration.ConfigurationDocument;
 import fr.axonic.jf.redmine.reader.configuration.ProjectStatus;
+import fr.axonic.jf.redmine.reader.configuration.RedmineCredentials;
 import fr.axonic.jf.redmine.reader.users.UserRole;
 
 import java.time.LocalDate;
 
 public class AxonicMetadataExtractor implements MetadataExtractor {
 
-    private final ConfigurationDocument runnerConfiguration;
+    private final RedmineCredentials redmineCredentials;
     private final ProjectStatus currentProject;
 
-    public AxonicMetadataExtractor(ConfigurationDocument runnerConfiguration, ProjectStatus currentProject) {
-        this.runnerConfiguration = runnerConfiguration;
+    public AxonicMetadataExtractor(RedmineCredentials redmineCredentials, ProjectStatus currentProject) {
+        this.redmineCredentials = redmineCredentials;
         this.currentProject = currentProject;
     }
 
@@ -58,7 +58,7 @@ public class AxonicMetadataExtractor implements MetadataExtractor {
     }
 
     private String name(ApprovalDocument approval) {
-        return "UNKNOWN";
+        return "UNKNOWN_NAME";
     }
 
     private String documentType(WikiPage page) {
@@ -67,7 +67,7 @@ public class AxonicMetadataExtractor implements MetadataExtractor {
         if (parts[0].startsWith("SWAM")) {
             return parts[1];
         } else {
-            return "UNKNOWN";
+            return "UNKNOWN_DOCUMENT_TYPE";
         }
     }
 
@@ -86,6 +86,6 @@ public class AxonicMetadataExtractor implements MetadataExtractor {
     }
 
     private String pageUrl(WikiPage page) {
-        return runnerConfiguration.getRedmineUrl() + "/" + currentProject + "/wiki/" + page.getTitle();
+        return redmineCredentials.getUrl() + "/" + currentProject + "/wiki/" + page.getTitle();
     }
 }

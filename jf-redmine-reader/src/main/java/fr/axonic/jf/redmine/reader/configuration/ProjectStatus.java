@@ -7,13 +7,13 @@ public class ProjectStatus {
     private String projectName;
     private LocalDateTime lastAnalysisTime;
 
-    public ProjectStatus(String projectName, LocalDateTime lastAnalysisTime) {
+    public ProjectStatus(String projectName) {
         this.projectName = projectName;
-        this.lastAnalysisTime = lastAnalysisTime;
+        this.lastAnalysisTime = LocalDateTime.MIN;
     }
 
     public ProjectStatus() {
-        // Nothing here.
+        lastAnalysisTime = LocalDateTime.MIN;
     }
 
     public String getProjectName() {

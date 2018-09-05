@@ -1,6 +1,5 @@
 package fr.axonic.jf.redmine.reader.transmission.bus;
 
-import fr.axonic.jf.redmine.reader.configuration.ConfigurationDocument;
 import fr.axonic.jf.redmine.reader.transmission.RedmineMapperProvider;
 import fr.axonic.jf.redmine.reader.transmission.RedmineSupportsTranslator;
 import fr.axonic.jf.redmine.reader.transmission.TransmittedSupports;
@@ -19,15 +18,15 @@ public class ConcreteAvekBusTransmitter extends AvekBusTransmitter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteAvekBusTransmitter.class);
 
-    private final ConfigurationDocument configuration;
+    private final String justificationFactoryBusUrl;
 
-    public ConcreteAvekBusTransmitter(RedmineSupportsTranslator translator, ConfigurationDocument configuration) {
+    public ConcreteAvekBusTransmitter(RedmineSupportsTranslator translator, String justificationFactoryBusUrl) {
         super(translator);
-        this.configuration = configuration;
+        this.justificationFactoryBusUrl = justificationFactoryBusUrl;
     }
 
     protected void sendSupports(TransmittedSupports supports) throws IOException {
-        URL url = new URL(configuration.getBusUrl() + "/supports");
+        URL url = new URL(justificationFactoryBusUrl + "/supports");
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 

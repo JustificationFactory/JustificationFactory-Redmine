@@ -7,11 +7,11 @@ import fr.axonic.jf.redmine.reader.analysis.WikiProjectProcessor;
 import fr.axonic.jf.redmine.reader.analysis.approvals.extraction.ApprovalExtractor;
 import fr.axonic.jf.redmine.reader.analysis.approvals.extraction.AxonicApprovalExtractor;
 import fr.axonic.jf.redmine.reader.analysis.notifications.NotificationSystem;
-import fr.axonic.jf.redmine.reader.analysis.notifications.NotificationSystemFactory;
+import fr.axonic.jf.redmine.reader.configuration.NotificationSystemFactory;
 import fr.axonic.jf.redmine.reader.analysis.reporting.AnalysisFormatter;
 import fr.axonic.jf.redmine.reader.analysis.reporting.AnalysisReport;
 import fr.axonic.jf.redmine.reader.transmission.bus.AvekBusTransmitter;
-import fr.axonic.jf.redmine.reader.transmission.bus.AvekBusTransmitterFactory;
+import fr.axonic.jf.redmine.reader.configuration.AvekBusTransmitterFactory;
 import fr.axonic.jf.redmine.reader.users.bindings.IdentityBinder;
 import fr.axonic.jf.redmine.reader.users.bindings.SimpleIdentityBinder;
 import fr.axonic.jf.redmine.reader.configuration.*;
@@ -59,8 +59,8 @@ public class JustificationFactoryRedmineRunner {
         LocalDateTime minimumDate = LocalDateTime.parse(arguments.getOptionValue(DATE_OPTION, DEFAULT_DATE), DATE_FORMATTER);
         AvekBusTransmitterType transmitterType = AvekBusTransmitterType.valueOf(arguments.getOptionValue(TRANSMITTER_OPTION, DEFAULT_TRANSMITTER));
 
-        for (String projectName : configuration.getProjects()) {
-            Optional<ProjectStatus> status = projects.getProject(projectName);
+        for (ProjectConfiguration project : configuration.getProjects()) {
+            Optional<ProjectStatus> status = projects.getProject(project.getProjectName());
 
             if (status.isPresent()) {
                 IdentityBinder identityBinder = new SimpleIdentityBinder();
@@ -68,7 +68,7 @@ public class JustificationFactoryRedmineRunner {
                 AvekBusTransmitter transmitter = AvekBusTransmitterFactory.getInstance().create(transmitterType, configuration, status.get());
                 NotificationSystem notifier = NotificationSystemFactory.getInstance().create(notifierType, configuration, status.get());
 
-                AnalysisReport report = WikiProjectProcessor.builder(configuration)
+                AnalysisReport report = WikiProjectProcessor.builder(configuration.getRedmineCredentials())
                         .with(identityBinder)
                         .with(transmitter)
                         .with(extractor)
@@ -103,7 +103,6 @@ public class JustificationFactoryRedmineRunner {
         dateOption.setRequired(false);
         options.addOption(dateOption);
 
-
         Option transmitterOption = new Option("t", TRANSMITTER_OPTION, true, "Type of transmitter");
         transmitterOption.setRequired(false);
         options.addOption(transmitterOption);
@@ -121,7 +120,7 @@ public class JustificationFactoryRedmineRunner {
         } else {
             ProjectsDocument projects = new ProjectsDocument();
 
-            runConfiguration.getProjects().forEach(project -> projects.getProjects().add(new ProjectStatus(project, LocalDateTime.MIN)));
+            runConfiguration.getProjects().forEach(project -> projects.getProjects().add(new ProjectStatus(project.getProjectName())));
 
             if (projectsFile.createNewFile()) {
                 MAPPER.writeValue(projectsFile, projects);
@@ -134,7 +133,7 @@ public class JustificationFactoryRedmineRunner {
     private static void saveReport(ConfigurationDocument configuration, AnalysisReport report) throws IOException {
         String reportAsHtml = new AnalysisFormatter().formatHtml(report);
 
-        SmbFile remoteRankingFile = new SmbFile(configuration.getRemoteRankingFolder() + "/ranking.html");
+        SmbFile remoteRankingFile = new SmbFile(configuration.getRankingSambaFolder() + "/ranking.html");
 
         if (!remoteRankingFile.exists()) {
             remoteRankingFile.createNewFile();

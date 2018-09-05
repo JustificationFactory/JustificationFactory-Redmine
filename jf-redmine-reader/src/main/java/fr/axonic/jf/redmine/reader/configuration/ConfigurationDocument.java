@@ -1,88 +1,57 @@
 package fr.axonic.jf.redmine.reader.configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigurationDocument {
 
-    private String redmineUrl;
-    private String redmineApiKey;
-    private String emailAddress;
-    private String emailPassword;
-    private String emailHost;
-    private String emailPort;
-    private String busUrl;
-    private String remoteRankingFolder;
-    private List<String> projects;
+    private RedmineCredentials redmineCredentials;
+    private EmailCredentials emailCredentials;
+    private String justificationFactoryBusUrl;
+    private String rankingSambaFolder;
+    private List<ProjectConfiguration> projects;
 
-    public String getRedmineUrl() {
-        return redmineUrl;
+    public ConfigurationDocument() {
+        projects = new ArrayList<>();
     }
 
-    public void setRedmineUrl(String redmineUrl) {
-        this.redmineUrl = redmineUrl;
+    public RedmineCredentials getRedmineCredentials() {
+        return redmineCredentials;
     }
 
-    public String getRedmineApiKey() {
-        return redmineApiKey;
+    public void setRedmineCredentials(RedmineCredentials redmineCredentials) {
+        this.redmineCredentials = redmineCredentials;
     }
 
-    public void setRedmineApiKey(String redmineApiKey) {
-        this.redmineApiKey = redmineApiKey;
+    public String getJustificationFactoryBusUrl() {
+        return justificationFactoryBusUrl;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public void setJustificationFactoryBusUrl(String justificationFactoryBusUrl) {
+        this.justificationFactoryBusUrl = justificationFactoryBusUrl;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public String getRankingSambaFolder() {
+        return rankingSambaFolder;
     }
 
-    public String getEmailPassword() {
-        return emailPassword;
+    public void setRankingSambaFolder(String rankingSambaFolder) {
+        this.rankingSambaFolder = rankingSambaFolder;
     }
 
-    public void setEmailPassword(String emailPassword) {
-        this.emailPassword = emailPassword;
+    public EmailCredentials getEmailCredentials() {
+        return emailCredentials;
     }
 
-    public String getEmailHost() {
-        return emailHost;
+    public void setEmailCredentials(EmailCredentials emailCredentials) {
+        this.emailCredentials = emailCredentials;
     }
 
-    public void setEmailHost(String emailHost) {
-        this.emailHost = emailHost;
-    }
-
-    public String getEmailPort() {
-        return emailPort;
-    }
-
-    public void setEmailPort(String emailPort) {
-        this.emailPort = emailPort;
-    }
-
-    public String getBusUrl() {
-        return busUrl;
-    }
-
-    public void setBusUrl(String busUrl) {
-        this.busUrl = busUrl;
-    }
-
-    public String getRemoteRankingFolder() {
-        return remoteRankingFolder;
-    }
-
-    public void setRemoteRankingFolder(String remoteRankingFolder) {
-        this.remoteRankingFolder = remoteRankingFolder;
-    }
-
-    public List<String> getProjects() {
+    public List<ProjectConfiguration> getProjects() {
         return projects;
     }
 
-    public void setProjects(List<String> projects) {
+    public void setProjects(List<ProjectConfiguration> projects) {
         this.projects = projects;
     }
 }

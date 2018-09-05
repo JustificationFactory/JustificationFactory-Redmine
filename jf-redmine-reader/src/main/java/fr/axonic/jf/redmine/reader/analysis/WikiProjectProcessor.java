@@ -12,8 +12,8 @@ import fr.axonic.jf.redmine.reader.analysis.approvals.verification.ApprovalVerif
 import fr.axonic.jf.redmine.reader.analysis.notifications.NotificationSystem;
 import fr.axonic.jf.redmine.reader.analysis.notifications.implementations.SilentNotificationSystem;
 import fr.axonic.jf.redmine.reader.analysis.reporting.AnalysisReport;
-import fr.axonic.jf.redmine.reader.configuration.ConfigurationDocument;
 import fr.axonic.jf.redmine.reader.configuration.ProjectStatus;
+import fr.axonic.jf.redmine.reader.configuration.RedmineCredentials;
 import fr.axonic.jf.redmine.reader.transmission.RedmineSupportsTranslator;
 import fr.axonic.jf.redmine.reader.transmission.bus.AvekBusTransmitter;
 import fr.axonic.jf.redmine.reader.transmission.bus.SilentAvekBusTransmitter;
@@ -103,21 +103,21 @@ public class WikiProjectProcessor {
         return report;
     }
 
-    public static Builder builder(ConfigurationDocument runConfiguration) {
-        return new Builder(runConfiguration);
+    public static Builder builder(RedmineCredentials redmineCredentials) {
+        return new Builder(redmineCredentials);
     }
 
     public static class Builder {
 
-        private final ConfigurationDocument runConfiguration;
+        private final RedmineCredentials redmineCredentials;
         private ApprovalExtractor approvalExtractor;
         private NotificationSystem notifier;
         private AvekBusTransmitter transmitter;
         private IdentityBinder identityBinder;
         private LocalDateTime minimumVerificationDate;
 
-        Builder(ConfigurationDocument runConfiguration) {
-            this.runConfiguration = runConfiguration;
+        public Builder(RedmineCredentials redmineCredentials) {
+            this.redmineCredentials = redmineCredentials;
         }
 
         public Builder with(ApprovalExtractor approvalExtractor) {
@@ -155,14 +155,14 @@ public class WikiProjectProcessor {
             Objects.requireNonNull(identityBinder);
             Objects.requireNonNull(status);
 
-            RedmineManager redmine = RedmineManagerFactory.createWithApiKey(runConfiguration.getRedmineUrl(), runConfiguration.getRedmineApiKey());
+            RedmineManager redmine = RedmineManagerFactory.createWithApiKey(redmineCredentials.getUrl(), redmineCredentials.getApiKey());
 
             if (notifier == null) {
                 notifier = new SilentNotificationSystem();
             }
 
             if (transmitter == null) {
-                transmitter = new SilentAvekBusTransmitter(new RedmineSupportsTranslator(runConfiguration, status));
+                transmitter = new SilentAvekBusTransmitter(new RedmineSupportsTranslator(redmineCredentials, status));
             }
 
             if (minimumVerificationDate == null) {

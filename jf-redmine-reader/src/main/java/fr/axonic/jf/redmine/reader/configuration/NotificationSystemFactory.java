@@ -1,11 +1,9 @@
-package fr.axonic.jf.redmine.reader.analysis.notifications;
+package fr.axonic.jf.redmine.reader.configuration;
 
+import fr.axonic.jf.redmine.reader.analysis.notifications.NotificationSystem;
 import fr.axonic.jf.redmine.reader.analysis.notifications.implementations.LoggerNotificationSystem;
 import fr.axonic.jf.redmine.reader.analysis.notifications.implementations.MailNotificationSystem;
 import fr.axonic.jf.redmine.reader.analysis.notifications.implementations.SilentNotificationSystem;
-import fr.axonic.jf.redmine.reader.configuration.ConfigurationDocument;
-import fr.axonic.jf.redmine.reader.configuration.NotifierType;
-import fr.axonic.jf.redmine.reader.configuration.ProjectStatus;
 import fr.axonic.jf.redmine.reader.utils.MailSender;
 
 public class NotificationSystemFactory {
@@ -23,7 +21,7 @@ public class NotificationSystemFactory {
     public NotificationSystem create(NotifierType type, ConfigurationDocument configuration, ProjectStatus project) {
         switch (type) {
             case MAIL:
-                return new MailNotificationSystem(new MailSender(configuration), configuration.getRedmineUrl(), project);
+                return new MailNotificationSystem(new MailSender(configuration.getEmailCredentials()), configuration.getRedmineCredentials().getUrl(), project);
             case LOGGER:
                 return new LoggerNotificationSystem();
             case SILENT:
