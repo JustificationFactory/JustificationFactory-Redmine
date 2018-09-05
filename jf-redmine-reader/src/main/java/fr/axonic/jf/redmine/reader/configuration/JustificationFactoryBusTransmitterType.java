@@ -1,6 +1,6 @@
 package fr.axonic.jf.redmine.reader.configuration;
 
-public enum AvekBusTransmitterType {
+public enum JustificationFactoryBusTransmitterType {
 
     SILENT,
     CONCRETE

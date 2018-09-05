@@ -14,13 +14,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-public class ConcreteAvekBusTransmitter extends AvekBusTransmitter {
+public class ConcreteJustificationFactoryBusTransmitter extends JustificationFactoryBusTransmitter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteAvekBusTransmitter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteJustificationFactoryBusTransmitter.class);
 
     private final String justificationFactoryBusUrl;
 
-    public ConcreteAvekBusTransmitter(RedmineSupportsTranslator translator, String justificationFactoryBusUrl) {
+    public ConcreteJustificationFactoryBusTransmitter(RedmineSupportsTranslator translator, String justificationFactoryBusUrl) {
         super(translator);
         this.justificationFactoryBusUrl = justificationFactoryBusUrl;
     }

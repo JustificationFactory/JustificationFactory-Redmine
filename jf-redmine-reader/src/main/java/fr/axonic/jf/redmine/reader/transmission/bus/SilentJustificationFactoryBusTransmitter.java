@@ -6,9 +6,9 @@ import fr.axonic.jf.redmine.reader.transmission.TransmittedSupports;
 
 import java.util.List;
 
-public class SilentAvekBusTransmitter extends AvekBusTransmitter {
+public class SilentJustificationFactoryBusTransmitter extends JustificationFactoryBusTransmitter {
 
-    public SilentAvekBusTransmitter(RedmineSupportsTranslator translator) {
+    public SilentJustificationFactoryBusTransmitter(RedmineSupportsTranslator translator) {
         super(translator);
     }
 

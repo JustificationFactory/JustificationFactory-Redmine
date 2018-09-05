@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AvekBusTransmitter {
+public abstract class JustificationFactoryBusTransmitter {
 
     private final RedmineSupportsTranslator translator;
 
-    public AvekBusTransmitter(RedmineSupportsTranslator translator) {
+    public JustificationFactoryBusTransmitter(RedmineSupportsTranslator translator) {
         this.translator = translator;
     }
 

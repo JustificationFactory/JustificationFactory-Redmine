@@ -12,11 +12,12 @@ import fr.axonic.jf.redmine.reader.analysis.approvals.verification.ApprovalVerif
 import fr.axonic.jf.redmine.reader.analysis.notifications.NotificationSystem;
 import fr.axonic.jf.redmine.reader.analysis.notifications.implementations.SilentNotificationSystem;
 import fr.axonic.jf.redmine.reader.analysis.reporting.AnalysisReport;
+import fr.axonic.jf.redmine.reader.configuration.ProjectConfiguration;
 import fr.axonic.jf.redmine.reader.configuration.ProjectStatus;
 import fr.axonic.jf.redmine.reader.configuration.RedmineCredentials;
 import fr.axonic.jf.redmine.reader.transmission.RedmineSupportsTranslator;
-import fr.axonic.jf.redmine.reader.transmission.bus.AvekBusTransmitter;
-import fr.axonic.jf.redmine.reader.transmission.bus.SilentAvekBusTransmitter;
+import fr.axonic.jf.redmine.reader.transmission.bus.JustificationFactoryBusTransmitter;
+import fr.axonic.jf.redmine.reader.transmission.bus.SilentJustificationFactoryBusTransmitter;
 import fr.axonic.jf.redmine.reader.users.bindings.IdentityBinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,22 +34,26 @@ public class WikiProjectProcessor {
     private final RedmineManager redmine;
     private final ApprovalExtractor approvalExtractor;
     private final NotificationSystem notifier;
-    private final AvekBusTransmitter transmitter;
+    private final JustificationFactoryBusTransmitter transmitter;
     private final IdentityBinder identityBinder;
+    private final ProjectConfiguration projectConfiguration;
     private final ProjectStatus studiedProject;
     private final LocalDateTime minimumVerificationDate;
 
     public WikiProjectProcessor(RedmineManager redmine,
                                 ApprovalExtractor approvalExtractor,
                                 NotificationSystem notifier,
-                                AvekBusTransmitter transmitter,
+                                JustificationFactoryBusTransmitter transmitter,
                                 IdentityBinder identityBinder,
-                                ProjectStatus studiedProject, LocalDateTime minimumVerificationDate) {
+                                ProjectConfiguration projectConfiguration,
+                                ProjectStatus studiedProject,
+                                LocalDateTime minimumVerificationDate) {
         this.redmine = redmine;
         this.approvalExtractor = approvalExtractor;
         this.notifier = notifier;
         this.transmitter = transmitter;
         this.identityBinder = identityBinder;
+        this.projectConfiguration = projectConfiguration;
         this.studiedProject = studiedProject;
         this.minimumVerificationDate = minimumVerificationDate;
     }
@@ -56,7 +61,9 @@ public class WikiProjectProcessor {
     public AnalysisReport runAnalysis() throws RedmineException, IOException {
         AnalysisReport report = new AnalysisReport();
 
-        List<WikiPage> projectPages = redmine.getWikiManager().getWikiPagesByProject(studiedProject.getProjectName());
+        List<WikiPage> projectPages = redmine.getWikiManager().getWikiPagesByProject(studiedProject.getProjectName()).stream()
+                .filter(wikiPage -> !projectConfiguration.getIgnoredDocuments().contains(wikiPage.getTitle()))
+                .collect(Collectors.toList());
 
         LOGGER.info("Fetched {} wiki pages.", projectPages.size());
 
@@ -112,7 +119,7 @@ public class WikiProjectProcessor {
         private final RedmineCredentials redmineCredentials;
         private ApprovalExtractor approvalExtractor;
         private NotificationSystem notifier;
-        private AvekBusTransmitter transmitter;
+        private JustificationFactoryBusTransmitter transmitter;
         private IdentityBinder identityBinder;
         private LocalDateTime minimumVerificationDate;
 
@@ -132,7 +139,7 @@ public class WikiProjectProcessor {
             return this;
         }
 
-        public Builder with(AvekBusTransmitter transmitter) {
+        public Builder with(JustificationFactoryBusTransmitter transmitter) {
             this.transmitter = transmitter;
 
             return this;
@@ -150,7 +157,7 @@ public class WikiProjectProcessor {
             return this;
         }
 
-        public WikiProjectProcessor forProject(ProjectStatus status) {
+        public WikiProjectProcessor forProject(ProjectConfiguration configuration, ProjectStatus status) {
             Objects.requireNonNull(approvalExtractor);
             Objects.requireNonNull(identityBinder);
             Objects.requireNonNull(status);
@@ -162,14 +169,14 @@ public class WikiProjectProcessor {
             }
 
             if (transmitter == null) {
-                transmitter = new SilentAvekBusTransmitter(new RedmineSupportsTranslator(redmineCredentials, status));
+                transmitter = new SilentJustificationFactoryBusTransmitter(new RedmineSupportsTranslator(redmineCredentials, status));
             }
 
             if (minimumVerificationDate == null) {
                 minimumVerificationDate = LocalDateTime.MIN;
             }
 
-            return new WikiProjectProcessor(redmine, approvalExtractor, notifier, transmitter, identityBinder, status, minimumVerificationDate);
+            return new WikiProjectProcessor(redmine, approvalExtractor, notifier, transmitter, identityBinder, configuration, status, minimumVerificationDate);
         }
     }
 }

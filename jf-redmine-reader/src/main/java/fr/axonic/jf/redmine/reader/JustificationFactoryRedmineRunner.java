@@ -10,8 +10,8 @@ import fr.axonic.jf.redmine.reader.analysis.notifications.NotificationSystem;
 import fr.axonic.jf.redmine.reader.configuration.NotificationSystemFactory;
 import fr.axonic.jf.redmine.reader.analysis.reporting.AnalysisFormatter;
 import fr.axonic.jf.redmine.reader.analysis.reporting.AnalysisReport;
-import fr.axonic.jf.redmine.reader.transmission.bus.AvekBusTransmitter;
-import fr.axonic.jf.redmine.reader.configuration.AvekBusTransmitterFactory;
+import fr.axonic.jf.redmine.reader.transmission.bus.JustificationFactoryBusTransmitter;
+import fr.axonic.jf.redmine.reader.configuration.JustificationFactoryBusTransmitterFactory;
 import fr.axonic.jf.redmine.reader.users.bindings.IdentityBinder;
 import fr.axonic.jf.redmine.reader.users.bindings.SimpleIdentityBinder;
 import fr.axonic.jf.redmine.reader.configuration.*;
@@ -57,7 +57,7 @@ public class JustificationFactoryRedmineRunner {
         ProjectsDocument projects = parseProjects(new File(arguments.getOptionValue(PROJECTS_OPTION, DEFAULT_PROJECTS)), configuration);
         NotifierType notifierType = NotifierType.valueOf(arguments.getOptionValue(NOTIFIER_OPTION, DEFAULT_NOTIFIER));
         LocalDateTime minimumDate = LocalDateTime.parse(arguments.getOptionValue(DATE_OPTION, DEFAULT_DATE), DATE_FORMATTER);
-        AvekBusTransmitterType transmitterType = AvekBusTransmitterType.valueOf(arguments.getOptionValue(TRANSMITTER_OPTION, DEFAULT_TRANSMITTER));
+        JustificationFactoryBusTransmitterType transmitterType = JustificationFactoryBusTransmitterType.valueOf(arguments.getOptionValue(TRANSMITTER_OPTION, DEFAULT_TRANSMITTER));
 
         for (ProjectConfiguration project : configuration.getProjects()) {
             Optional<ProjectStatus> status = projects.getProject(project.getProjectName());
@@ -65,7 +65,7 @@ public class JustificationFactoryRedmineRunner {
             if (status.isPresent()) {
                 IdentityBinder identityBinder = new SimpleIdentityBinder();
                 ApprovalExtractor extractor = new AxonicApprovalExtractor(identityBinder);
-                AvekBusTransmitter transmitter = AvekBusTransmitterFactory.getInstance().create(transmitterType, configuration, status.get());
+                JustificationFactoryBusTransmitter transmitter = JustificationFactoryBusTransmitterFactory.getInstance().create(transmitterType, configuration, status.get());
                 NotificationSystem notifier = NotificationSystemFactory.getInstance().create(notifierType, configuration, status.get());
 
                 AnalysisReport report = WikiProjectProcessor.builder(configuration.getRedmineCredentials())
@@ -74,7 +74,7 @@ public class JustificationFactoryRedmineRunner {
                         .with(extractor)
                         .with(notifier)
                         .from(minimumDate)
-                        .forProject(status.get())
+                        .forProject(project, status.get())
                         .runAnalysis();
 
                 saveReport(configuration, report);
@@ -131,16 +131,18 @@ public class JustificationFactoryRedmineRunner {
     }
 
     private static void saveReport(ConfigurationDocument configuration, AnalysisReport report) throws IOException {
-        String reportAsHtml = new AnalysisFormatter().formatHtml(report);
+        if (!configuration.getRankingSambaFolder().isEmpty()) {
+            String reportAsHtml = new AnalysisFormatter().formatHtml(report);
 
-        SmbFile remoteRankingFile = new SmbFile(configuration.getRankingSambaFolder() + "/ranking.html");
+            SmbFile remoteRankingFile = new SmbFile(configuration.getRankingSambaFolder() + "/ranking.html");
 
-        if (!remoteRankingFile.exists()) {
-            remoteRankingFile.createNewFile();
-        }
+            if (!remoteRankingFile.exists()) {
+                remoteRankingFile.createNewFile();
+            }
 
-        try (SmbFileOutputStream remoteFileOutputStream = new SmbFileOutputStream(remoteRankingFile)) {
-            remoteFileOutputStream.write(reportAsHtml.getBytes());
+            try (SmbFileOutputStream remoteFileOutputStream = new SmbFileOutputStream(remoteRankingFile)) {
+                remoteFileOutputStream.write(reportAsHtml.getBytes());
+            }
         }
     }
 }
