@@ -77,7 +77,7 @@ public class JustificationFactoryRedmineRunner {
                         .forProject(project, status.get())
                         .runAnalysis();
 
-                saveReport(configuration, report);
+                // saveReport(configuration, report);
 
                 // TODO Update the projects file.
             }

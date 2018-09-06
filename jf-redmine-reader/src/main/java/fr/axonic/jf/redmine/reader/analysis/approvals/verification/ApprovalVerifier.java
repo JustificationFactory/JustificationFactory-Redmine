@@ -9,6 +9,7 @@ import fr.axonic.jf.redmine.reader.analysis.notifications.NotificationSystem;
 import fr.axonic.jf.redmine.reader.analysis.notifications.NotificationType;
 import fr.axonic.jf.redmine.reader.analysis.notifications.UserNotification;
 import fr.axonic.jf.redmine.reader.analysis.reporting.AnalysisReport;
+import fr.axonic.jf.redmine.reader.users.UnknownUserIdentity;
 import fr.axonic.jf.redmine.reader.users.UserIdentity;
 import fr.axonic.jf.redmine.reader.users.UserRole;
 import fr.axonic.jf.redmine.reader.users.bindings.IdentityBinder;
@@ -113,7 +114,7 @@ public class ApprovalVerifier {
     }
 
     private void ok(WikiPage page, UserIdentity user) {
-        notify(new UserNotification(user, page, NotificationType.OK));
+        notify(user, page, NotificationType.OK);
     }
 
     private void noAuthor(WikiPage page) {
@@ -121,28 +122,34 @@ public class ApprovalVerifier {
     }
 
     private void notSignedAsAuthor(WikiPage page, UserIdentity user) {
-        notify(new UserNotification(user, page, NotificationType.NOT_SIGNED_AS_AUTHOR));
+        notify(user, page, NotificationType.NOT_SIGNED_AS_AUTHOR);
     }
 
     private void notSignedAsVerifier(WikiPage page, UserIdentity user) {
-        notify(new UserNotification(user, page, NotificationType.NOT_SIGNED_AS_VERIFIER));
+        notify(user, page, NotificationType.NOT_SIGNED_AS_VERIFIER);
     }
 
     private void wrongDate(WikiPage page, UserIdentity user) {
-        notify(new UserNotification(user, page, NotificationType.WRONG_DATE));
+        notify(user, page, NotificationType.WRONG_DATE);
     }
 
     private void missingDate(WikiPage page, UserIdentity user) {
-        notify(new UserNotification(user, page, NotificationType.MISSING_DATE));
+        notify(user, page, NotificationType.MISSING_DATE);
     }
 
-    private void notify(UserNotification notification) {
-        if (isIgnoredDocument(notification.getPage()) && notification.getType().getLevel() != NotificationLevel.ERROR) {
-            return;
-        }
+    private void notify(UserIdentity user, WikiPage page, NotificationType type) {
+        if (user instanceof UnknownUserIdentity) {
+            notifier.register(new UserNotification(identityBinder.getDefaultUser(), page, type));
+        } else {
+            UserNotification notification = new UserNotification(user, page, type);
 
-        report.acknowledge(notification);
-        notifier.register(notification);
+            if (isIgnoredDocument(notification.getPage()) && notification.getType().getLevel() != NotificationLevel.ERROR) {
+                return;
+            }
+
+            report.acknowledge(notification);
+            notifier.register(notification);
+        }
     }
 
     private boolean isIgnoredDocument(WikiPage page) {

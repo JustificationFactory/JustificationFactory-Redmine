@@ -37,10 +37,6 @@ public class ApprovalSignature {
         return confirmed;
     }
 
-    public boolean isValidated() {
-        return confirmed && signedDate != null && signatoryRole != null && signatory != null;
-    }
-
     @Override
     public String toString() {
         String signatoryInitials = signatory == null ? "?" : signatory.getInitials();

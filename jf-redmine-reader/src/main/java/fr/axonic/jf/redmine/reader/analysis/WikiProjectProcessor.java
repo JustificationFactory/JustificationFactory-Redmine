@@ -86,6 +86,7 @@ public class WikiProjectProcessor {
                 .collect(Collectors.toList());
 
         LOGGER.info("Built {} pages approvals.", generatedApprovals.size());
+        LOGGER.info("Pages with approval: {}", generatedApprovals.stream().map(ApprovalDocument::getWikiPage).map(WikiPage::getTitle).collect(Collectors.toList()));
         report.setWikiPagesWithApproval(generatedApprovals.size());
 
         ApprovalVerifier approvalVerifier = new ApprovalVerifier(minimumVerificationDate, notifier, identityBinder, report);
