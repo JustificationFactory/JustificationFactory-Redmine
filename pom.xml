@@ -16,8 +16,8 @@
     <name>Justification Factory Redmine</name>
 
     <properties>
-        <scmUrl>https://github.com/JustificationFactory/JustificationFactory-Engine.git</scmUrl>
-        <scmConnection>scm:git:ssh://git@github.com:JustificationFactory/JustificationFactory-Engine.git</scmConnection>
+        <scmUrl>https://github.com/JustificationFactory/JustificationFactory-Redmine.git</scmUrl>
+        <scmConnection>scm:git:ssh://git@github.com:JustificationFactory/JustificationFactory-Redmine.git</scmConnection>
         <nexusUrl>http://matar.axonic.lan:8082/nexus</nexusUrl>
         <nexusReleasesUrl>${nexusUrl}/content/repositories/releases/</nexusReleasesUrl>
         <nexusSnapshotsUrl>${nexusUrl}/content/repositories/snapshots/</nexusSnapshotsUrl>
