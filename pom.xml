@@ -8,7 +8,6 @@
     <artifactId>jf-redmine</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-
     <modules>
         <module>jf-redmine-reader</module>
         <module>jf-redmine-masterfile-builder</module>
@@ -17,8 +16,85 @@
     <name>Justification Factory Redmine</name>
 
     <properties>
+        <scmUrl>https://github.com/JustificationFactory/JustificationFactory-Engine.git</scmUrl>
+        <scmConnection>scm:git:ssh://git@github.com:JustificationFactory/JustificationFactory-Engine.git</scmConnection>
+        <nexusUrl>http://matar.axonic.lan:8082/nexus</nexusUrl>
+        <nexusReleasesUrl>${nexusUrl}/content/repositories/releases/</nexusReleasesUrl>
+        <nexusSnapshotsUrl>${nexusUrl}/content/repositories/snapshots/</nexusSnapshotsUrl>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jersey2.version>2.27</jersey2.version>
+        <jaxrs.version>2.1</jaxrs.version>
+        <log4j.version>2.7</log4j.version>
+        <asf.version>4.0.0-sprint5</asf.version>
+        <deployment.server>http://andromeda.axonic.lan:8080/manager/text</deployment.server>
     </properties>
+
+    <scm>
+        <url>${scmUrl}</url>
+        <connection>${scmConnection}</connection>
+        <developerConnection>${scmConnection}</developerConnection>
+    </scm>
+    <distributionManagement>
+        <repository>
+            <id>deployment</id>
+            <layout>default</layout>
+            <name>Internal Releases</name>
+            <url>${nexusReleasesUrl}</url>
+        </repository>
+        <snapshotRepository>
+            <id>deployment</id>
+            <name>Internal Snapshots</name>
+            <url>${nexusSnapshotsUrl}</url>
+        </snapshotRepository>
+        <site>
+            <id>${project.artifactId}-site</id>
+            <url>${project.baseUri}</url>
+        </site>
+    </distributionManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.28</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.axonic.avek</groupId>
+            <artifactId>avek-engine-instance</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>jcifs</groupId>
+            <artifactId>jcifs</artifactId>
+            <version>1.3.17</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -33,4 +109,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
