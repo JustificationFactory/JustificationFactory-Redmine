@@ -14,7 +14,7 @@
     <name>Justification Factory Redmine :: Reader</name>
 
     <build>
-        <finalName>avek-redmine</finalName>
+        <finalName>jf-redmine</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -30,7 +30,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>fr.axonic.avek.redmine.reader.AvekRedmineRunner</mainClass>
+                            <mainClass>fr.axonic.jf.redmine.reader.JustificationFactoryRedmineRunner</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
