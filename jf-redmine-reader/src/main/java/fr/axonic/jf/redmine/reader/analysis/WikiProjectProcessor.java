@@ -61,54 +61,46 @@ public class WikiProjectProcessor {
     public AnalysisReport runAnalysis() throws RedmineException, IOException {
         AnalysisReport report = new AnalysisReport();
 
-        List<WikiPage> projectPages = redmine.getWikiManager().getWikiPagesByProject(studiedProject.getProjectName()).stream()
-                .filter(wikiPage -> !projectConfiguration.getIgnoredDocuments().contains(wikiPage.getTitle()))
-                .collect(Collectors.toList());
+        List<JustificationDocument> justificationDocuments = fetchJustificationDocuments();
 
-        LOGGER.info("Fetched {} wiki pages.", projectPages.size());
-
-        Map<WikiPage, WikiPageDetail> pagesDetails = new HashMap<>();
-        for (WikiPage page : projectPages) {
-            try {
-                pagesDetails.put(page, redmine.getWikiManager().getWikiPageDetailByProjectAndTitle(studiedProject.getProjectName(), page.getTitle()));
-            } catch (NotFoundException e) {
-                LOGGER.error("Could not fetch the details of page `{}`.", page.getTitle(), e);
-            }
-        }
-
-        LOGGER.info("Fetched details of {} pages.", pagesDetails.size());
-        report.setTotalWikiPages(pagesDetails.size());
-
-        List<ApprovalDocument> generatedApprovals = pagesDetails.entrySet().stream()
-                .map(tuple -> approvalExtractor.extract(tuple.getKey(), tuple.getValue()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-
-        LOGGER.info("Built {} pages approvals.", generatedApprovals.size());
-        LOGGER.info("Pages with approval: {}", generatedApprovals.stream().map(ApprovalDocument::getWikiPage).map(WikiPage::getTitle).collect(Collectors.toList()));
-        report.setWikiPagesWithApproval(generatedApprovals.size());
+        LOGGER.info("Fetched {} justification documents: {}.", justificationDocuments.size(), justificationDocuments.stream().map(d -> d.getAssociatedPage().getTitle()).collect(Collectors.toList()));
+        report.setWikiPagesWithApproval(justificationDocuments.size());
 
         ApprovalVerifier approvalVerifier = new ApprovalVerifier(minimumVerificationDate, notifier, identityBinder, report);
-
-        List<ApprovalDocument> validApprovals = generatedApprovals.stream()
-                .filter(approval -> {
-                    boolean isValid = approvalVerifier.verify(approval);
-
-                    report.acknowledge(approval, isValid);
-
-                    return isValid;
-                })
-                .sorted(Comparator.comparing(o -> o.getWikiPage().getUpdatedOn()))
+        List<JustificationDocument> validatedJustificationDocuments = justificationDocuments.stream()
+                .filter(approval -> approvalVerifier.verify(approval.getApproval()))
+                .sorted(Comparator.comparing(o -> o.getAssociatedPage().getUpdatedOn()))
                 .collect(Collectors.toList());
 
-        LOGGER.info("Built and validated {} pages approvals.", validApprovals.size());
+        LOGGER.info("Built and validated {} pages approvals.", validatedJustificationDocuments.size());
 
         notifier.notifyUsers();
 
-        transmitter.send(validApprovals);
+        transmitter.send(validatedJustificationDocuments);
 
         return report;
+    }
+
+    private List<JustificationDocument> fetchJustificationDocuments() throws RedmineException {
+        return redmine.getWikiManager().getWikiPagesByProject(studiedProject.getProjectName()).stream()
+                .filter(wikiPage -> !projectConfiguration.getIgnoredDocuments().contains(wikiPage.getTitle()))
+                .map(wikiPage -> {
+                    WikiPageDetail detail = null;
+                    try {
+                        detail = redmine.getWikiManager().getWikiPageDetailByProjectAndTitle(studiedProject.getProjectName(), wikiPage.getTitle());
+                    } catch (RedmineException e) {
+                        LOGGER.error("Could not fetch the details of page `{}`.", wikiPage.getTitle(), e);
+                    }
+                    
+                    Optional<ApprovalDocument> approval = Optional.empty();
+                    if (detail != null) {
+                        approval = approvalExtractor.extract(wikiPage, detail);
+                    }
+
+                    return new JustificationDocument(wikiPage, detail, approval.orElse(null));
+                })
+                .filter(justificationDocument -> justificationDocument.getPageDetail() != null && justificationDocument.getApproval() != null)
+                .collect(Collectors.toList());
     }
 
     public static Builder builder(RedmineCredentials redmineCredentials) {
@@ -124,7 +116,7 @@ public class WikiProjectProcessor {
         private IdentityBinder identityBinder;
         private LocalDateTime minimumVerificationDate;
 
-        public Builder(RedmineCredentials redmineCredentials) {
+        Builder(RedmineCredentials redmineCredentials) {
             this.redmineCredentials = redmineCredentials;
         }
 
