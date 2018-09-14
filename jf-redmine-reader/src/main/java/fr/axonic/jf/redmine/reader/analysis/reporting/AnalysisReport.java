@@ -1,9 +1,8 @@
 package fr.axonic.jf.redmine.reader.analysis.reporting;
 
+import fr.axonic.jf.redmine.reader.analysis.JustificationDocument;
 import fr.axonic.jf.redmine.reader.analysis.approvals.ApprovalDocument;
 import fr.axonic.jf.redmine.reader.analysis.approvals.ApprovalSignature;
-import fr.axonic.jf.redmine.reader.analysis.notifications.NotificationLevel;
-import fr.axonic.jf.redmine.reader.analysis.notifications.UserNotification;
 import fr.axonic.jf.redmine.reader.users.UserIdentity;
 
 import java.util.*;
@@ -16,12 +15,20 @@ public class AnalysisReport {
     private int wikiPagesWithApproval;
     private int approvalsInError;
 
+    private List<JustificationDocument> allJustificationDocuments;
+    private List<JustificationDocument> validatedUnlockedJustificationDocuments;
+    private List<JustificationDocument> unlockedJustificationDocumentsWithErrors;
+
     public AnalysisReport() {
         usersPerformances = new HashMap<>();
         performances = new ArrayList<>();
         totalWikiPages = 0;
         wikiPagesWithApproval = 0;
         approvalsInError = 0;
+
+        allJustificationDocuments = new ArrayList<>();
+        validatedUnlockedJustificationDocuments = new ArrayList<>();
+        unlockedJustificationDocumentsWithErrors = new ArrayList<>();
     }
 
     public int getTotalWikiPages() {
@@ -58,15 +65,6 @@ public class AnalysisReport {
         updateOrder();
     }
 
-    public void acknowledge(UserNotification notification) {
-        if (notification.getUser() == null) {
-            return;
-        }
-
-        getUser(notification.getUser()).acknowledge(notification);
-        updateOrder();
-    }
-
     public List<UserPerformance> getPerformances() {
         return performances;
     }
@@ -96,12 +94,6 @@ public class AnalysisReport {
 
             numberOfFaults = 0;
             numberOfTotalContributions = 0;
-        }
-
-        public void acknowledge(UserNotification notification) {
-            if (notification.getType().getLevel() != NotificationLevel.OK) {
-                numberOfFaults++;
-            }
         }
 
         public void acknowledge(ApprovalDocument approval) {

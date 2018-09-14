@@ -7,7 +7,7 @@ import fr.axonic.jf.redmine.reader.analysis.approvals.ApprovalSignature;
 import fr.axonic.jf.redmine.reader.users.UnknownUserIdentity;
 import fr.axonic.jf.redmine.reader.users.UserIdentity;
 import fr.axonic.jf.redmine.reader.users.UserRole;
-import fr.axonic.jf.redmine.reader.users.bindings.IdentityBinder;
+import fr.axonic.jf.redmine.reader.users.bindings.ProjectIdentityBinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,12 +16,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
-public class AxonicApprovalExtractor extends ApprovalExtractor {
+public class AxonicApprovalDocumentExtractor extends ApprovalDocumentExtractor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AxonicApprovalExtractor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AxonicApprovalDocumentExtractor.class);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/uu");
 
-    public AxonicApprovalExtractor(IdentityBinder identityBinder) {
+    public AxonicApprovalDocumentExtractor(ProjectIdentityBinder identityBinder) {
         super(identityBinder);
     }
 
@@ -37,17 +37,17 @@ public class AxonicApprovalExtractor extends ApprovalExtractor {
         }
 
         try {
-            return Optional.ofNullable(convertValidationText(wikiPage, splitText[1].trim()));
+            return Optional.of(convertValidationText(splitText[1].trim()));
         } catch (Exception e) {
             LOGGER.info("The page `{}` does not follow the structure.", wikiPage.getTitle());
             LOGGER.error("Exception while extracting the validation document of `{}`.", wikiPage.getTitle(), e);
 
-            return Optional.of(new ApprovalDocument(wikiPage));
+            return Optional.empty();
         }
     }
 
-    private ApprovalDocument convertValidationText(WikiPage page, String validationText) {
-        ApprovalDocument document = new ApprovalDocument(page);
+    private ApprovalDocument convertValidationText(String validationText) {
+        ApprovalDocument document = new ApprovalDocument();
         fillDocument(document, validationText);
 
         return document;
@@ -98,7 +98,7 @@ public class AxonicApprovalExtractor extends ApprovalExtractor {
 
     private UserIdentity parseIdentifier(String identifierString) {
         if (identifierString == null) {
-            return null;
+            return new UnknownUserIdentity(null);
         }
 
         identifierString = identifierString.replaceAll("\\(.*\\)", "").trim();
@@ -111,7 +111,7 @@ public class AxonicApprovalExtractor extends ApprovalExtractor {
         }
 
         if (identifierString.isEmpty()) {
-            return null;
+            return new UnknownUserIdentity(null);
         }
 
         String[] split = identifierString.split(" ");
@@ -129,6 +129,9 @@ public class AxonicApprovalExtractor extends ApprovalExtractor {
         }
 
         identifierString = String.join("", split);
+        if (identifierString.equals("")) {
+            identifierString = null;
+        }
 
         return getIdentityBinder().getUser(identifierString).orElse(new UnknownUserIdentity(identifierString));
     }

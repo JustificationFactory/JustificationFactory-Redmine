@@ -32,7 +32,7 @@ public class AxonicMetadataExtractor implements MetadataExtractor {
 
     @Override
     public RedmineDocument extractMetadata(ApprovalDocument approval) {
-        WikiPage wikiPage = approval.getWikiPage();
+        WikiPage wikiPage = approval.getSource().getAssociatedPage();
 
         RedmineDocument document = new RedmineDocument(pageUrl(wikiPage));
         document.setVersion(version(wikiPage));

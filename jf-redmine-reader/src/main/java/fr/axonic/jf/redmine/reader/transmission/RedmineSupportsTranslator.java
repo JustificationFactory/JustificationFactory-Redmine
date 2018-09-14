@@ -24,13 +24,13 @@ public class RedmineSupportsTranslator {
     }
 
     public RedmineDocumentEvidence translateEvidence(ApprovalDocument approval) {
-        WikiPage page = approval.getWikiPage();
+        WikiPage page = approval.getSource().getAssociatedPage();
 
         return new RedmineDocumentEvidence(pageName(page), extractor.extractMetadata(approval));
     }
 
     public RedmineDocumentApproval translateApproval(ApprovalDocument approval) {
-        WikiPage page = approval.getWikiPage();
+        WikiPage page = approval.getSource().getAssociatedPage();
 
         Document document = new Document(getPageUrl(page) + "#APPROBATION-DU-DOCUMENT");
         document.setVersion(version(page));

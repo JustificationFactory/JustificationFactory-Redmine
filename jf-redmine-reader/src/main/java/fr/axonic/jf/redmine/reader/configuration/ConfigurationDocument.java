@@ -7,6 +7,7 @@ public class ConfigurationDocument {
 
     private RedmineCredentials redmineCredentials;
     private EmailCredentials emailCredentials;
+    private RedmineDatabaseCredentials redmineDatabaseCredentials;
     private String justificationFactoryBusUrl;
     private String rankingSambaFolder;
     private List<ProjectConfiguration> projects;
@@ -23,6 +24,22 @@ public class ConfigurationDocument {
         this.redmineCredentials = redmineCredentials;
     }
 
+    public EmailCredentials getEmailCredentials() {
+        return emailCredentials;
+    }
+
+    public void setEmailCredentials(EmailCredentials emailCredentials) {
+        this.emailCredentials = emailCredentials;
+    }
+
+    public RedmineDatabaseCredentials getRedmineDatabaseCredentials() {
+        return redmineDatabaseCredentials;
+    }
+
+    public void setRedmineDatabaseCredentials(RedmineDatabaseCredentials redmineDatabaseCredentials) {
+        this.redmineDatabaseCredentials = redmineDatabaseCredentials;
+    }
+
     public String getJustificationFactoryBusUrl() {
         return justificationFactoryBusUrl;
     }
@@ -37,14 +54,6 @@ public class ConfigurationDocument {
 
     public void setRankingSambaFolder(String rankingSambaFolder) {
         this.rankingSambaFolder = rankingSambaFolder;
-    }
-
-    public EmailCredentials getEmailCredentials() {
-        return emailCredentials;
-    }
-
-    public void setEmailCredentials(EmailCredentials emailCredentials) {
-        this.emailCredentials = emailCredentials;
     }
 
     public List<ProjectConfiguration> getProjects() {
