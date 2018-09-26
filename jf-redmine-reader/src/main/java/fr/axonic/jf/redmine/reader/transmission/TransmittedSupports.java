@@ -1,6 +1,6 @@
 package fr.axonic.jf.redmine.reader.transmission;
 
-import fr.axonic.avek.engine.support.Support;
+import fr.axonic.jf.engine.support.Support;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;

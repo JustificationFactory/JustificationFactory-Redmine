@@ -1,6 +1,6 @@
 package fr.axonic.jf.redmine.masterfile.formatters;
 
-import fr.axonic.avek.instance.redmine.RedmineDocument;
+import fr.axonic.jf.instance.redmine.RedmineDocument;
 import fr.axonic.jf.redmine.masterfile.MasterFile;
 import org.junit.Before;
 import org.junit.Test;

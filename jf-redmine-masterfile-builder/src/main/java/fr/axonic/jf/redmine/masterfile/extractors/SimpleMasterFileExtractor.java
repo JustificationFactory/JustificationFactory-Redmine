@@ -1,11 +1,13 @@
 package fr.axonic.jf.redmine.masterfile.extractors;
 
-import fr.axonic.avek.engine.pattern.JustificationStep;
-import fr.axonic.avek.engine.pattern.Pattern;
-import fr.axonic.avek.engine.support.Support;
-import fr.axonic.avek.instance.redmine.RedmineDocument;
-import fr.axonic.avek.instance.redmine.RedmineDocumentEvidence;
+import fr.axonic.jf.engine.JustificationMatrix;
+import fr.axonic.jf.engine.pattern.JustificationStep;
+import fr.axonic.jf.engine.pattern.Pattern;
+import fr.axonic.jf.engine.support.Support;
+import fr.axonic.jf.instance.redmine.RedmineDocument;
+import fr.axonic.jf.instance.redmine.RedmineDocumentEvidence;
 import fr.axonic.jf.redmine.masterfile.MasterFile;
+import fr.axonic.jf.redmine.masterfile.RedmineMapperProvider;
 import javafx.util.Pair;
 
 import javax.ws.rs.core.Response;
@@ -17,7 +19,7 @@ import java.util.Optional;
 
 public class SimpleMasterFileExtractor implements MasterFileExtractor {
 
-    private static final String TECHNICAL_SPECIFICATIONS_ID = "ST";
+    private static final String TECHNICAL_SPECIFICATIONS_ID = "redmine";
 
     private final String jfServiceUrl;
     private final String projectName;
@@ -32,10 +34,10 @@ public class SimpleMasterFileExtractor implements MasterFileExtractor {
         return getMatrix().map(this::translate).orElse(null);
     }
 
-    private MasterFile translate(List<Pair<Pattern,JustificationStep>> matrix) {
+    private MasterFile translate(JustificationMatrix matrix) {
         MasterFile masterFile = new MasterFile(getProjectName());
 
-        for (Pair<Pattern, JustificationStep> row : matrix) {
+        for (Pair<Pattern, JustificationStep> row : matrix.getContent()) {
             List<RedmineDocument> recipient = masterFile.getDevelopmentDocuments(); // TODO Redirect in the correct list
 
             row.getValue().getSupports().stream()
@@ -52,7 +54,7 @@ public class SimpleMasterFileExtractor implements MasterFileExtractor {
         return projectName;
     }
 
-    private Optional<List<Pair<Pattern,JustificationStep>>> getMatrix() throws IOException {
+    private Optional<JustificationMatrix> getMatrix() throws IOException {
         URL url = new URL(jfServiceUrl + "/" + TECHNICAL_SPECIFICATIONS_ID + "/matrix");
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -62,9 +64,7 @@ public class SimpleMasterFileExtractor implements MasterFileExtractor {
         connection.addRequestProperty("Content-Type", "application/json");
 
         if (connection.getResponseCode() == Response.Status.FOUND.getStatusCode()) {
-            System.out.println(connection.getContent());
-            // TODO Here.
-            return Optional.empty();
+            return Optional.ofNullable(new RedmineMapperProvider().getContext(null).readValue(connection.getInputStream(), JustificationMatrix.class));
         } else {
             return Optional.empty();
         }

@@ -1,6 +1,6 @@
 package fr.axonic.jf.redmine.masterfile;
 
-import fr.axonic.avek.instance.redmine.RedmineDocument;
+import fr.axonic.jf.instance.redmine.RedmineDocument;
 
 import java.util.ArrayList;
 import java.util.List;
