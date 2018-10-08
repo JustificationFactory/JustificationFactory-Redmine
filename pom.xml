@@ -17,23 +17,25 @@
 
     <properties>
         <scmUrl>https://github.com/JustificationFactory/JustificationFactory-Redmine.git</scmUrl>
-        <scmConnection>scm:git:ssh://git@github.com:JustificationFactory/JustificationFactory-Redmine.git</scmConnection>
+        <scmConnection>scm:git:https://git@github.com/JustificationFactory/JustificationFactory-Redmine.git</scmConnection>
+        <scmDevConnection>scm:git:https://git@github.com/JustificationFactory/JustificationFactory-Redmine.git</scmDevConnection>
         <nexusUrl>http://matar.axonic.lan:8082/nexus</nexusUrl>
         <nexusReleasesUrl>${nexusUrl}/content/repositories/releases/</nexusReleasesUrl>
         <nexusSnapshotsUrl>${nexusUrl}/content/repositories/snapshots/</nexusSnapshotsUrl>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jersey2.version>2.27</jersey2.version>
-        <jaxrs.version>2.1</jaxrs.version>
+        <jf.version>1.0.0</jf.version>
         <log4j.version>2.7</log4j.version>
-        <asf.version>4.0.0-sprint5</asf.version>
+        <jackson.version>2.9.6</jackson.version>
         <deployment.server>http://andromeda.axonic.lan:8080/manager/text</deployment.server>
     </properties>
 
     <scm>
         <url>${scmUrl}</url>
         <connection>${scmConnection}</connection>
-        <developerConnection>${scmConnection}</developerConnection>
+        <developerConnection>${scmDevConnection}</developerConnection>
+        <tag>master</tag>
     </scm>
+
     <distributionManagement>
         <repository>
             <id>deployment</id>
@@ -70,14 +72,19 @@
             <version>1.4</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.25</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.freemarker</groupId>
@@ -85,9 +92,9 @@
             <version>2.3.28</version>
         </dependency>
         <dependency>
-            <groupId>fr.axonic.avek</groupId>
-            <artifactId>avek-engine-instance</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>fr.axonic.jf</groupId>
+            <artifactId>jf-engine-instance</artifactId>
+            <version>${jf.version}</version>
         </dependency>
         <dependency>
             <groupId>jcifs</groupId>
@@ -100,14 +107,78 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.8.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.2</version>
+                <configuration>
+                    <append>true</append>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.7.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
+    <organization>
+        <name>AXONIC</name>
+    </organization>
+    <contributors>
+        <contributor>
+            <name>Clément Duffau</name>
+            <email>cduffau@axonic.fr</email>
+        </contributor>
+        <contributor>
+            <name>Antoine Aubé</name>
+            <email>aaube@axonic.fr</email>
+        </contributor>
+    </contributors>
 </project>
