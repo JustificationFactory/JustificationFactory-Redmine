@@ -92,13 +92,10 @@
         </dependency>
         <dependency>
             <groupId>fr.axonic.jf</groupId>
-            <artifactId>jf-engine-instance</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>jf-engine</artifactId>
+            <version>${jf.version}</version>
         </dependency>
         <dependency>
-            <groupId>fr.axonic.jf</groupId>
-            <artifactId>jf-engine</artifactId>
-            <version>1.0-SNAPSHOT</version>
             <groupId>fr.axonic.jf</groupId>
             <artifactId>jf-engine-instance</artifactId>
             <version>${jf.version}</version>
