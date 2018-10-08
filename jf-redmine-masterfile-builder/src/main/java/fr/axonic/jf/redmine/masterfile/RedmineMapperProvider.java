@@ -1,4 +1,4 @@
-package fr.axonic.jf.redmine.reader.transmission;
+package fr.axonic.jf.redmine.masterfile;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,6 +1,6 @@
 package fr.axonic.jf.redmine.reader.transmission.bus;
 
-import fr.axonic.jf.redmine.reader.analysis.approvals.ApprovalDocument;
+import fr.axonic.jf.redmine.reader.analysis.JustificationDocument;
 import fr.axonic.jf.redmine.reader.transmission.RedmineSupportsTranslator;
 import fr.axonic.jf.redmine.reader.transmission.TransmittedSupports;
 
@@ -17,10 +17,10 @@ public abstract class JustificationFactoryBusTransmitter {
         this.translator = translator;
     }
 
-    public void send(List<ApprovalDocument> approvals) throws IOException {
+    public void send(List<JustificationDocument> justificationDocuments) throws IOException {
         TransmittedSupports supports = new TransmittedSupports();
-        supports.setSupports(approvals.stream()
-                .flatMap(p -> Stream.of(translator.translateEvidence(p), translator.translateApproval(p)))
+        supports.setSupports(justificationDocuments.stream()
+                .flatMap(j -> Stream.of(translator.translateEvidence(j.getApproval()), translator.translateApproval(j.getApproval())))
                 .collect(Collectors.toList()));
 
         sendSupports(supports);

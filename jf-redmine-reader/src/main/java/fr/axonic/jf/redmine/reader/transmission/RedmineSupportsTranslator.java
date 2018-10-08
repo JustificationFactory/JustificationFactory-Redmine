@@ -1,9 +1,9 @@
 package fr.axonic.jf.redmine.reader.transmission;
 
 import com.taskadapter.redmineapi.bean.WikiPage;
-import fr.axonic.avek.engine.support.evidence.Document;
-import fr.axonic.avek.instance.redmine.RedmineDocumentApproval;
-import fr.axonic.avek.instance.redmine.RedmineDocumentEvidence;
+import fr.axonic.jf.engine.support.evidence.Document;
+import fr.axonic.jf.instance.redmine.RedmineDocumentApproval;
+import fr.axonic.jf.instance.redmine.RedmineDocumentEvidence;
 import fr.axonic.jf.redmine.reader.analysis.approvals.ApprovalDocument;
 import fr.axonic.jf.redmine.reader.configuration.ProjectStatus;
 import fr.axonic.jf.redmine.reader.configuration.RedmineCredentials;
@@ -24,13 +24,13 @@ public class RedmineSupportsTranslator {
     }
 
     public RedmineDocumentEvidence translateEvidence(ApprovalDocument approval) {
-        WikiPage page = approval.getWikiPage();
+        WikiPage page = approval.getSource().getAssociatedPage();
 
         return new RedmineDocumentEvidence(pageName(page), extractor.extractMetadata(approval));
     }
 
     public RedmineDocumentApproval translateApproval(ApprovalDocument approval) {
-        WikiPage page = approval.getWikiPage();
+        WikiPage page = approval.getSource().getAssociatedPage();
 
         Document document = new Document(getPageUrl(page) + "#APPROBATION-DU-DOCUMENT");
         document.setVersion(version(page));

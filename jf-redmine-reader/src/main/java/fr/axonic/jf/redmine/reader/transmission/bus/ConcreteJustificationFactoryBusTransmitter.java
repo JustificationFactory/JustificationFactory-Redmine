@@ -25,6 +25,7 @@ public class ConcreteJustificationFactoryBusTransmitter extends JustificationFac
         this.justificationFactoryBusUrl = justificationFactoryBusUrl;
     }
 
+    @Override
     protected void sendSupports(TransmittedSupports supports) throws IOException {
         URL url = new URL(justificationFactoryBusUrl + "/supports");
 

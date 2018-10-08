@@ -3,7 +3,7 @@ package fr.axonic.jf.redmine.reader.analysis.approvals.extraction;
 import fr.axonic.jf.redmine.reader.analysis.approvals.ApprovalDocument;
 import fr.axonic.jf.redmine.reader.analysis.approvals.ApprovalSignature;
 import fr.axonic.jf.redmine.reader.users.UserRole;
-import fr.axonic.jf.redmine.reader.users.bindings.SimpleIdentityBinder;
+import fr.axonic.jf.redmine.reader.users.bindings.SimpleProjectIdentityBinder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,15 +11,15 @@ import java.time.LocalDate;
 
 import static org.junit.Assert.*;
 
-public class AxonicApprovalExtractorTest {
+public class AxonicApprovalDocumentExtractorTest {
 
     private ApprovalDocument document;
-    private AxonicApprovalExtractor extractor;
+    private AxonicApprovalDocumentExtractor extractor;
 
     @Before
     public void initialize() {
-        document = new ApprovalDocument(null);
-        extractor = new AxonicApprovalExtractor(new SimpleIdentityBinder());
+        document = new ApprovalDocument();
+        extractor = new AxonicApprovalDocumentExtractor(new SimpleProjectIdentityBinder());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class AxonicApprovalExtractorTest {
 
         ApprovalSignature signature = document.getSignatures().get(0);
         assertEquals("MYT", signature.getSignatory().getInitials());
-        assertEquals(ApprovalExtractor.WRONG_DATE, signature.getSignedDate().get());
+        assertEquals(ApprovalDocumentExtractor.WRONG_DATE, signature.getSignedDate().get());
         assertEquals(UserRole.AUTHOR, signature.getSignatoryRole());
         assertTrue(signature.isConfirmed());
     }

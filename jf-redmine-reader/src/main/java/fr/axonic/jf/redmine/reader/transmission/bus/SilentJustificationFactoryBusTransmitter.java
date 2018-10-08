@@ -1,5 +1,6 @@
 package fr.axonic.jf.redmine.reader.transmission.bus;
 
+import fr.axonic.jf.redmine.reader.analysis.JustificationDocument;
 import fr.axonic.jf.redmine.reader.analysis.approvals.ApprovalDocument;
 import fr.axonic.jf.redmine.reader.transmission.RedmineSupportsTranslator;
 import fr.axonic.jf.redmine.reader.transmission.TransmittedSupports;
@@ -13,7 +14,7 @@ public class SilentJustificationFactoryBusTransmitter extends JustificationFacto
     }
 
     @Override
-    public void send(List<ApprovalDocument> approvals) {
+    public void send(List<JustificationDocument> approvals) {
         // Do nothing.
     }
 

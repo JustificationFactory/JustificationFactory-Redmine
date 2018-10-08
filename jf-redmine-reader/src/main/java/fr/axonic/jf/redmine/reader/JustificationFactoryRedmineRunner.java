@@ -4,17 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.taskadapter.redmineapi.RedmineException;
 import fr.axonic.jf.redmine.reader.analysis.WikiProjectProcessor;
-import fr.axonic.jf.redmine.reader.analysis.approvals.extraction.ApprovalExtractor;
-import fr.axonic.jf.redmine.reader.analysis.approvals.extraction.AxonicApprovalExtractor;
+import fr.axonic.jf.redmine.reader.analysis.approvals.extraction.ApprovalDocumentExtractor;
+import fr.axonic.jf.redmine.reader.analysis.approvals.extraction.AxonicApprovalDocumentExtractor;
 import fr.axonic.jf.redmine.reader.analysis.notifications.NotificationSystem;
-import fr.axonic.jf.redmine.reader.configuration.NotificationSystemFactory;
 import fr.axonic.jf.redmine.reader.analysis.reporting.AnalysisFormatter;
 import fr.axonic.jf.redmine.reader.analysis.reporting.AnalysisReport;
-import fr.axonic.jf.redmine.reader.transmission.bus.JustificationFactoryBusTransmitter;
-import fr.axonic.jf.redmine.reader.configuration.JustificationFactoryBusTransmitterFactory;
-import fr.axonic.jf.redmine.reader.users.bindings.IdentityBinder;
-import fr.axonic.jf.redmine.reader.users.bindings.SimpleIdentityBinder;
 import fr.axonic.jf.redmine.reader.configuration.*;
+import fr.axonic.jf.redmine.reader.transmission.bus.JustificationFactoryBusTransmitter;
+import fr.axonic.jf.redmine.reader.users.bindings.ProjectIdentityBinder;
+import fr.axonic.jf.redmine.reader.users.bindings.SimpleProjectIdentityBinder;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileOutputStream;
 import org.apache.commons.cli.*;
@@ -23,8 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class JustificationFactoryRedmineRunner {
@@ -34,17 +30,14 @@ public class JustificationFactoryRedmineRunner {
     private static final String CONFIGURATION_OPTION = "credentials";
     private static final String PROJECTS_OPTION = "projects";
     private static final String NOTIFIER_OPTION = "notifier";
-    private static final String DATE_OPTION = "date";
     private static final String TRANSMITTER_OPTION = "transmitter";
 
     private static final String DEFAULT_CONFIGURATION = System.getProperty("user.home") + "/.jf/jf_redmine/configuration.json";
     private static final String DEFAULT_PROJECTS = System.getProperty("user.home") + "/.jf/jf_redmine/projects.json";
     private static final String DEFAULT_NOTIFIER = "SILENT";
-    private static final String DEFAULT_DATE = "2010-01-01 01:00:00";
     private static final String DEFAULT_TRANSMITTER = "SILENT";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     static {
         MAPPER.registerModule(new JavaTimeModule());
@@ -56,28 +49,25 @@ public class JustificationFactoryRedmineRunner {
         ConfigurationDocument configuration = MAPPER.readValue(new File(arguments.getOptionValue(CONFIGURATION_OPTION, DEFAULT_CONFIGURATION)), ConfigurationDocument.class);
         ProjectsDocument projects = parseProjects(new File(arguments.getOptionValue(PROJECTS_OPTION, DEFAULT_PROJECTS)), configuration);
         NotifierType notifierType = NotifierType.valueOf(arguments.getOptionValue(NOTIFIER_OPTION, DEFAULT_NOTIFIER));
-        LocalDateTime minimumDate = LocalDateTime.parse(arguments.getOptionValue(DATE_OPTION, DEFAULT_DATE), DATE_FORMATTER);
         JustificationFactoryBusTransmitterType transmitterType = JustificationFactoryBusTransmitterType.valueOf(arguments.getOptionValue(TRANSMITTER_OPTION, DEFAULT_TRANSMITTER));
 
         for (ProjectConfiguration project : configuration.getProjects()) {
             Optional<ProjectStatus> status = projects.getProject(project.getProjectName());
 
             if (status.isPresent()) {
-                IdentityBinder identityBinder = new SimpleIdentityBinder();
-                ApprovalExtractor extractor = new AxonicApprovalExtractor(identityBinder);
+                ProjectIdentityBinder identityBinder = new SimpleProjectIdentityBinder();
+                ApprovalDocumentExtractor extractor = new AxonicApprovalDocumentExtractor(identityBinder);
                 JustificationFactoryBusTransmitter transmitter = JustificationFactoryBusTransmitterFactory.getInstance().create(transmitterType, configuration, status.get());
-                NotificationSystem notifier = NotificationSystemFactory.getInstance().create(notifierType, configuration, status.get());
+                NotificationSystem notifier = NotificationSystemFactory.getInstance().create(notifierType, configuration, status.get(), identityBinder);
 
-                AnalysisReport report = WikiProjectProcessor.builder(configuration.getRedmineCredentials())
-                        .with(identityBinder)
+                AnalysisReport report = WikiProjectProcessor.builder(configuration.getRedmineCredentials(), configuration.getRedmineDatabaseCredentials())
                         .with(transmitter)
                         .with(extractor)
                         .with(notifier)
-                        .from(minimumDate)
                         .forProject(project, status.get())
                         .runAnalysis();
 
-                // saveReport(configuration, report);
+                //saveReport(configuration, report);
 
                 // TODO Update the projects file.
             }
@@ -98,10 +88,6 @@ public class JustificationFactoryRedmineRunner {
         Option notifierOption = new Option("n", NOTIFIER_OPTION, true, "Type of notifier");
         notifierOption.setRequired(false);
         options.addOption(notifierOption);
-
-        Option dateOption = new Option("d", DATE_OPTION, true, "Minimum date of verification");
-        dateOption.setRequired(false);
-        options.addOption(dateOption);
 
         Option transmitterOption = new Option("t", TRANSMITTER_OPTION, true, "Type of transmitter");
         transmitterOption.setRequired(false);

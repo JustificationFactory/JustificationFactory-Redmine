@@ -17,6 +17,12 @@ public class MasterFileGenerator {
 
     public void execute() {
         try {
+            MasterFile masterFile = extractor.extract();
+
+            System.out.println(masterFile);
+
+            System.out.println(masterFile.getDevelopmentDocuments());
+
             System.out.println(formatter.format(extractor.extract()));
         } catch (IOException e) {
             e.printStackTrace();

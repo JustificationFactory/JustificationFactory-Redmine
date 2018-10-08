@@ -35,7 +35,6 @@
         <developerConnection>${scmDevConnection}</developerConnection>
         <tag>master</tag>
     </scm>
-
     <distributionManagement>
         <repository>
             <id>deployment</id>
@@ -94,12 +93,25 @@
         <dependency>
             <groupId>fr.axonic.jf</groupId>
             <artifactId>jf-engine-instance</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.axonic.jf</groupId>
+            <artifactId>jf-engine</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <groupId>fr.axonic.jf</groupId>
+            <artifactId>jf-engine-instance</artifactId>
             <version>${jf.version}</version>
         </dependency>
         <dependency>
             <groupId>jcifs</groupId>
             <artifactId>jcifs</artifactId>
             <version>1.3.17</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.12</version>
         </dependency>
     </dependencies>
 

@@ -1,51 +1,70 @@
 package fr.axonic.jf.redmine.reader.analysis.notifications;
 
+import fr.axonic.jf.redmine.reader.analysis.JustificationDocument;
+import fr.axonic.jf.redmine.reader.analysis.approvals.analysis.ApprovalIssue;
 import fr.axonic.jf.redmine.reader.users.UserIdentity;
+import fr.axonic.jf.redmine.reader.users.bindings.ProjectIdentityBinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class NotificationSystem {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSystem.class);
 
-    private Map<UserIdentity, List<UserNotification>> registeredNotifications;
+    private final ProjectIdentityBinder identityBinder;
 
-    public NotificationSystem() {
-        registeredNotifications = new HashMap<>();
+    public NotificationSystem(ProjectIdentityBinder identityBinder) {
+        this.identityBinder = identityBinder;
     }
 
-    public void register(UserNotification notification) {
-        if (notification.getUser() == null || notification.getUser().getInitials() == null) {
-            return;
-        }
+    public void notify(NotificationContent content) {
+        List<ApprovalIssue> projectManagerOtherIssues = new ArrayList<>();
 
-        if (!registeredNotifications.containsKey(notification.getUser())) {
-            registeredNotifications.put(notification.getUser(), new ArrayList<>());
-        }
+        Map<UserIdentity, List<ApprovalIssue>> sortedIssues = new HashMap<>();
 
-        registeredNotifications.get(notification.getUser()).add(notification);
-    }
+        content.getListedIssuesInApproval().forEach(issue -> {
+            Optional<UserIdentity> involvedUser = issue.getUser();
 
-    public void notifyUsers() {
-        registeredNotifications.forEach((user, notifications) -> {
-            List<UserNotification> usefulNotifications = notifications.stream()
-                    .filter(notification -> notification.getType() != NotificationType.OK)
-                    .sorted(Comparator.comparing(o -> ((UserNotification) o).getPage().getUpdatedOn()).reversed())
-                    .collect(Collectors.toList());
+            if (involvedUser.isPresent()) {
+                UserIdentity containedUser = involvedUser.get();
 
-            if (!usefulNotifications.isEmpty()) {
-                try {
-                    notifyUser(user, usefulNotifications);
-                } catch (IOException e) {
-                    LOGGER.error("Failed to notify user {}.", user.getInitials(), e);
+                if (identityBinder.knows(containedUser.getInitials())) {
+                    if (!sortedIssues.containsKey(containedUser)) {
+                        sortedIssues.put(containedUser, new ArrayList<>());
+                    }
+
+                    sortedIssues.get(containedUser).add(issue);
+                } else {
+                    projectManagerOtherIssues.add(issue);
                 }
+            } else {
+                projectManagerOtherIssues.add(issue);
+            }
+        });
+
+        UserIdentity projectManager = identityBinder.getProjectManager();
+        List<ApprovalIssue> projectManagerIssues = sortedIssues.getOrDefault(projectManager, new ArrayList<>());
+        sortedIssues.remove(projectManager);
+
+        try {
+            notifyProjectManager(projectManager, projectManagerIssues, projectManagerOtherIssues, content.getValidatedJustificationDocuments());
+        } catch (IOException e) {
+            LOGGER.error("Failed to notify project manager {}.", projectManager.getInitials(), e);
+        }
+
+        sortedIssues.forEach((user, issues) -> {
+            try {
+                notifyUser(user, issues);
+            } catch (IOException e) {
+                LOGGER.error("Failed to notify user {}.", user.getInitials(), e);
             }
         });
     }
 
-    protected abstract void notifyUser(UserIdentity identity, List<UserNotification> accumulatedNotifications) throws IOException;
+    protected abstract void notifyProjectManager(UserIdentity user, List<ApprovalIssue> userIssues, List<ApprovalIssue> otherIssues, List<JustificationDocument> validatedDocuments) throws IOException;
+
+    protected abstract void notifyUser(UserIdentity user, List<ApprovalIssue> userIssues) throws IOException;
 }

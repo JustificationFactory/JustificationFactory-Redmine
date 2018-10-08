@@ -4,7 +4,7 @@ import fr.axonic.jf.redmine.reader.users.UserIdentity;
 
 import java.util.*;
 
-public class SimpleIdentityBinder implements IdentityBinder {
+public class SimpleProjectIdentityBinder implements ProjectIdentityBinder {
 
     private static final Map<String, UserIdentity> USERS = new HashMap<>();
 
@@ -14,7 +14,6 @@ public class SimpleIdentityBinder implements IdentityBinder {
         USERS.put("ME", new UserIdentity("ME", "meusebe@axonic.fr"));
         USERS.put("JP", new UserIdentity("JP", "jpradels@axonic.fr"));
         USERS.put("MC", new UserIdentity("MC", "mcombettes@axonic.fr"));
-        USERS.put("LW", new UserIdentity("LW", "lwauters@axonic.fr"));
         USERS.put("FS", new UserIdentity("FS", "fsibileau@axonic.fr"));
         USERS.put("JLD", new UserIdentity("JLD", "jldivoux@axonic.fr"));
         USERS.put("LG", new UserIdentity("LG", "lguillemetz@axonic.fr"));
@@ -23,13 +22,18 @@ public class SimpleIdentityBinder implements IdentityBinder {
     }
 
     @Override
-    public UserIdentity getDefaultUser() {
-        return new UserIdentity("Project Owner", "lguillemetz@axonic.fr");
+    public UserIdentity getProjectManager() {
+        return new UserIdentity("LG", "lguillemetz@axonic.fr");
     }
 
     @Override
     public Optional<UserIdentity> getUser(String initials) {
         return Optional.ofNullable(USERS.get(initials));
+    }
+
+    @Override
+    public boolean knows(String initials) {
+        return USERS.containsKey(initials);
     }
 
     @Override

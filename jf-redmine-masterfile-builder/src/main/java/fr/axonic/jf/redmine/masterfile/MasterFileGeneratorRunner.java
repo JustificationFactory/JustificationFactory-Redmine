@@ -11,9 +11,9 @@ public class MasterFileGeneratorRunner {
     public static void main(String[] args) throws ParseException {
         CommandLine arguments = parseArguments(args);
 
-        String busUrl = arguments.getOptionValue("bus");
+        String wsUrl = arguments.getOptionValue("ws");
 
-        MasterFileExtractor extractor = new SimpleMasterFileExtractor(busUrl, "SWAM");
+        MasterFileExtractor extractor = new SimpleMasterFileExtractor(wsUrl, "SWAM");
         MasterFileFormatter formatter = new MarkdownMasterFileFormatter();
 
         MasterFileGenerator generator = new MasterFileGenerator(extractor, formatter);
@@ -23,9 +23,9 @@ public class MasterFileGeneratorRunner {
     private static CommandLine parseArguments(String[] args) throws ParseException {
         Options options = new Options();
 
-        Option busUrlOption = new Option("b", "bus", true, "URL of the bus");
-        busUrlOption.setRequired(true);
-        options.addOption(busUrlOption);
+        Option wsUrlOption = new Option("w", "ws", true, "URL of the webservice");
+        wsUrlOption.setRequired(true);
+        options.addOption(wsUrlOption);
 
         CommandLineParser parser = new DefaultParser();
 
