@@ -5,7 +5,7 @@
     <groupId>fr.axonic</groupId>
     <artifactId>jf-redmine</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <modules>
         <module>jf-redmine-reader</module>
         <module>jf-redmine-masterfile-builder</module>
@@ -31,7 +31,7 @@
         <url>${scmUrl}</url>
         <connection>${scmConnection}</connection>
         <developerConnection>${scmDevConnection}</developerConnection>
-        <tag>master</tag>
+        <tag>jf-redmine-1.0.0</tag>
     </scm>
     <distributionManagement>
         <repository>
