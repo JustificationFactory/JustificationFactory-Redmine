@@ -43,20 +43,30 @@ public class ApprovalDocumentAnalyzer {
                 issue(ApprovalIssueType.NO_VERIFIER);
             }
 
-            approval.getSignatures().forEach(this::analyze);
+            approval.getSignatures().stream().filter(s -> s.getSignatoryRole() == UserRole.AUTHOR).forEach(this::analyzeAuthor);
+
+            if (issues.stream().noneMatch(i -> i.getIssueType() == ApprovalIssueType.NOT_SIGNED_AS_AUTHOR)) {
+                approval.getSignatures().stream().filter(s -> s.getSignatoryRole() == UserRole.AUTHOR).forEach(this::analyzeAuthor);
+            }
         }
 
-        private void analyze(ApprovalSignature signature) {
-            if (!signature.isConfirmed()) {
-                if (signature.getSignatoryRole() == UserRole.AUTHOR) {
-                    issue(ApprovalIssueType.NOT_SIGNED_AS_AUTHOR, signature);
-                } else if (signature.getSignatoryRole() == UserRole.VERIFIER) {
-                    issue(ApprovalIssueType.NOT_SIGNED_AS_VERIFIER, signature);
-                }
-
-                return;
+        private void analyzeAuthor(ApprovalSignature signature) {
+            if (signature.isConfirmed()) {
+                analyzeUser(signature);
+            } else {
+                issue(ApprovalIssueType.NOT_SIGNED_AS_AUTHOR, signature);
             }
+        }
 
+        private void analyzeVerifier(ApprovalSignature signature) {
+            if (signature.isConfirmed()) {
+                analyzeUser(signature);
+            } else {
+                issue(ApprovalIssueType.NOT_SIGNED_AS_VERIFIER, signature);
+            }
+        }
+
+        private void analyzeUser(ApprovalSignature signature) {
             Optional<LocalDate> signedDate = signature.getSignedDate();
             if (signedDate.isPresent()) {
                 if (signedDate.get() == ApprovalDocumentExtractor.WRONG_DATE) {
