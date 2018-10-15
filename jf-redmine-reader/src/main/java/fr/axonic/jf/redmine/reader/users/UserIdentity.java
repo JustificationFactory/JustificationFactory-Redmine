@@ -17,8 +17,7 @@ public class UserIdentity {
     }
 
     public String getEmail() {
-        return "aaube@axonic.fr";
-//        return email;
+        return email;
     }
 
     @Override
