@@ -1,5 +1,6 @@
 package fr.axonic.jf.redmine.masterfile.extractors;
 
+import fr.axonic.jf.engine.InstantiatedStep;
 import fr.axonic.jf.engine.JustificationMatrix;
 import fr.axonic.jf.engine.pattern.JustificationStep;
 import fr.axonic.jf.engine.pattern.Pattern;
@@ -19,7 +20,7 @@ import java.util.Optional;
 
 public class SimpleMasterFileExtractor implements MasterFileExtractor {
 
-    private static final String TECHNICAL_SPECIFICATIONS_ID = "redmine";
+    private static final String TECHNICAL_SPECIFICATIONS_ID = "REDMINE";
 
     private final String jfServiceUrl;
     private final String projectName;
@@ -37,10 +38,10 @@ public class SimpleMasterFileExtractor implements MasterFileExtractor {
     private MasterFile translate(JustificationMatrix matrix) {
         MasterFile masterFile = new MasterFile(getProjectName());
 
-        for (Pair<Pattern, JustificationStep> row : matrix.getContent()) {
+        for (InstantiatedStep row : matrix.getContent()) {
             List<RedmineDocument> recipient = masterFile.getDevelopmentDocuments(); // TODO Redirect in the correct list
 
-            row.getValue().getSupports().stream()
+            row.getStep().getSupports().stream()
                     .filter(s -> s instanceof RedmineDocumentEvidence)
                     .map(s -> (RedmineDocumentEvidence) s)
                     .map(Support::getElement)
