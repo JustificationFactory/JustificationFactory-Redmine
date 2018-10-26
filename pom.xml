@@ -22,7 +22,7 @@
         <nexusReleasesUrl>${nexusUrl}/content/repositories/releases/</nexusReleasesUrl>
         <nexusSnapshotsUrl>${nexusUrl}/content/repositories/snapshots/</nexusSnapshotsUrl>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jf.version>1.0.1-SNAPSHOT</jf.version>
+        <jf.version>1.0.1</jf.version>
         <log4j.version>2.7</log4j.version>
         <jackson.version>2.9.6</jackson.version>
         <deployment.server>http://andromeda.axonic.lan:8080/manager/text</deployment.server>
