@@ -46,7 +46,7 @@ public class ApprovalDocumentAnalyzer {
             approval.getSignatures().stream().filter(s -> s.getSignatoryRole() == UserRole.AUTHOR).forEach(this::analyzeAuthor);
 
             if (issues.stream().noneMatch(i -> i.getIssueType() == ApprovalIssueType.NOT_SIGNED_AS_AUTHOR)) {
-                approval.getSignatures().stream().filter(s -> s.getSignatoryRole() == UserRole.AUTHOR).forEach(this::analyzeAuthor);
+                approval.getSignatures().stream().filter(s -> s.getSignatoryRole() == UserRole.VERIFIER).forEach(this::analyzeVerifier);
             }
         }
 

@@ -37,7 +37,9 @@ public class AxonicApprovalDocumentExtractor extends ApprovalDocumentExtractor {
         }
 
         try {
-            return Optional.of(convertValidationText(splitText[1].trim()));
+            ApprovalDocument approvalDocument = convertValidationText(splitText[1].trim());
+
+            return Optional.of(approvalDocument);
         } catch (Exception e) {
             LOGGER.info("The page `{}` does not follow the structure.", wikiPage.getTitle());
             LOGGER.error("Exception while extracting the validation document of `{}`.", wikiPage.getTitle(), e);
